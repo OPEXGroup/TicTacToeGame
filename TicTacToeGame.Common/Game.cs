@@ -9,7 +9,7 @@ using TicTacToeGame.Common.Utils;
 
 namespace TicTacToeGame.Common
 {
-    public class Game
+    public sealed class Game
     {
         #region public
 
@@ -81,6 +81,7 @@ namespace TicTacToeGame.Common
                 ApplyMove(move);
                 if (LastMoveVictorious())
                 {
+
                     ReportCurrentPlayerWon();
                     return;
                 }
@@ -322,9 +323,9 @@ namespace TicTacToeGame.Common
             return x >= 0 && x < _height && y >= 0 && y < _width && _field[x, y] == CellSign.Empty;
         }
 
-        protected virtual void OnGameStateChanged(GameStateChangedEventArgs e) => GameStateChanged?.Invoke(this, e);
+        private void OnGameStateChanged(GameStateChangedEventArgs e) => GameStateChanged?.Invoke(this, e);
 
-        protected virtual void OnGameEnded(GameEndedEventArgs e) => GameEnded?.Invoke(this, e);
+        private void OnGameEnded(GameEndedEventArgs e) => GameEnded?.Invoke(this, e);
 
         private readonly int _width;
         private readonly int _height;

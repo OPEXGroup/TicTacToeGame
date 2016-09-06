@@ -228,14 +228,14 @@ namespace TicTacToeGame.Common
          */
         private bool RightDiagonalBuilt(Cell move)
         {
-            var deviationLowerBound = -Math.Min(Math.Min(move.X, move.Y), 4); // included
-            var deviationUpperBound = Math.Min(Math.Min(_height - move.X, _width - move.Y - VictoryLength + 1), 4); // excluded
+            var deviationLowerBound = -Math.Min(Math.Min(move.X, VictoryLength - 1), -Math.Min(1, _width - move.Y - VictoryLength + 1)); // included
+            var deviationUpperBound = Math.Min(Math.Min(_height - move.X - VictoryLength + 1, 1), -Math.Min(move.Y - 1, VictoryLength - 2)); // excluded
             for (var startDeviation = deviationLowerBound; startDeviation < deviationUpperBound; startDeviation++)
             {
                 var foundVictory = true;
                 for (var deviation = startDeviation; deviation < startDeviation + VictoryLength; ++deviation)
                 {
-                    if (_field[move.X + deviation, move.Y + deviation] == _currentSign)
+                    if (_field[move.X + deviation, move.Y - deviation] == _currentSign)
                         continue;
                     foundVictory = false;
                     break;
@@ -254,7 +254,23 @@ namespace TicTacToeGame.Common
          */
         private bool LeftDiagonalBuilt(Cell move)
         {
-            return true;
+            var deviationLowerBound = -Math.Min(Math.Min(move.X, move.Y), VictoryLength - 1); // included
+            var deviationUpperBound = Math.Min(Math.Min(_height - move.X - VictoryLength + 1, _width - move.Y - VictoryLength + 1), 1); // excluded
+            for (var startDeviation = deviationLowerBound; startDeviation < deviationUpperBound; startDeviation++)
+            {
+                var foundVictory = true;
+                for (var deviation = startDeviation; deviation < startDeviation + VictoryLength; ++deviation)
+                {
+                    if (_field[move.X + deviation, move.Y + deviation] == _currentSign)
+                        continue;
+                    foundVictory = false;
+                    break;
+                }
+
+                if (foundVictory)
+                    return true;
+            }
+            return false;
         }
 
         private bool LastMoveVictorious()

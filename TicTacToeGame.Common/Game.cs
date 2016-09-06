@@ -33,6 +33,41 @@ namespace TicTacToeGame.Common
                 _started = true;
             }
 
+            _gameThread = new Thread(GameLoop);
+            _gameThread.Start();
+        }
+
+        public void ReportStepProcessed()
+        {
+            lock (_stepLock)
+            {
+                _stepProcessed = true;
+            }
+        }
+
+        public void WaitGameCompleted() => _gameThread.Join();
+
+        public event EventHandler<GameStateChangedEventArgs> GameStateChanged;
+        public event EventHandler<GameEndedEventArgs> GameEnded; 
+         
+        #endregion
+
+        #region private
+        private Game(GameConfiguration configuration)
+        {
+            _width = configuration.Width;
+            _height = configuration.Height;
+            _botTurnLength = configuration.BotTurnLength;
+            _firstPlayer = configuration.FirstPlayer;
+            _secondPlayer = configuration.SecondPlayer;
+
+            _currentSign = CellSign.X;
+            _currentPlayer = _firstPlayer;
+            _field = new CellSign[_height, _width];
+        }
+
+        private void GameLoop()
+        {
             while (true)
             {
                 _step++;
@@ -60,33 +95,6 @@ namespace TicTacToeGame.Common
                 WaitStepProcessed();
                 MoveNextSign();
             }
-        }
-
-        public void ReportStepProcessed()
-        {
-            lock (_stepLock)
-            {
-                _stepProcessed = true;
-            }
-        }
-
-        public event EventHandler<GameStateChangedEventArgs> GameStateChanged;
-        public event EventHandler<GameEndedEventArgs> GameEnded; 
-         
-        #endregion
-
-        #region private
-        private Game(GameConfiguration configuration)
-        {
-            _width = configuration.Width;
-            _height = configuration.Height;
-            _botTurnLength = configuration.BotTurnLength;
-            _firstPlayer = configuration.FirstPlayer;
-            _secondPlayer = configuration.SecondPlayer;
-
-            _currentSign = CellSign.X;
-            _currentPlayer = _firstPlayer;
-            _field = new CellSign[_height, _width];
         }
 
         private void WaitStepProcessed()
@@ -331,6 +339,7 @@ namespace TicTacToeGame.Common
         private int _step;
         private readonly List<Cell> _history = new List<Cell>();
 
+        private Thread _gameThread;
         private bool _started;
         private bool _stepProcessed;
         private readonly object _stateLock = new object();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ITCC.Logging.Core;
 using TicTacToeGame.Common.Enums;
 using TicTacToeGame.Common.Interfaces;
 using TicTacToeGame.Common.Utils;
@@ -31,6 +32,7 @@ namespace TicTacToeGame.Common
                 if (_started)
                     return;
                 _started = true;
+
             }
 
             _gameThread = new Thread(GameLoop);
@@ -64,6 +66,7 @@ namespace TicTacToeGame.Common
             _currentSign = CellSign.X;
             _currentPlayer = _firstPlayer;
             _field = new CellSign[_height, _width];
+            LogMessage(LogLevel.Info, $"Game {_height}x{_width} created ({_firstPlayer.Name} vs {_secondPlayer.Name})");
         }
 
         private void GameLoop()
@@ -72,8 +75,17 @@ namespace TicTacToeGame.Common
             {
                 _step++;
                 var move = GetNextMove();
-                if (move == null || !MoveIsValid(move))
+
+                if (move == null)
                 {
+                    LogMessage(LogLevel.Info, $"Move by {_currentPlayer.Name} took longer than {_botTurnLength}ms, {NotCurrentPlayer.Name} won");
+                    ReportCurrentMoveInvalid();
+                    return;
+                }
+
+                if (!MoveIsValid(move))
+                {
+                    LogMessage(LogLevel.Info, $"Move ({move.X}, {move.Y}) by {_currentPlayer.Name} is not valid, {NotCurrentPlayer.Name} won");
                     ReportCurrentMoveInvalid();
                     return;
                 }
@@ -81,19 +93,22 @@ namespace TicTacToeGame.Common
                 ApplyMove(move);
                 if (LastMoveVictorious())
                 {
-
+                    LogMessage(LogLevel.Info, $"{_currentPlayer.Name} won with ({move.X}, {move.Y}) move");
                     ReportCurrentPlayerWon();
                     return;
                 }
 
                 if (FieldIsFull())
                 {
+                    LogMessage(LogLevel.Info, "Field is full, draw");
                     ReportDraw();
                     return;
                 }
 
+                LogMessage(LogLevel.Debug, $"Step {_step} computed, waiting for observers");
                 ReportGameStateChanged();
                 WaitStepProcessed();
+                LogMessage(LogLevel.Debug, $"Step {_step} processed");
                 MoveNextSign();
             }
         }
@@ -176,6 +191,7 @@ namespace TicTacToeGame.Common
         {
             _field[move.X, move.Y] = _currentSign;
             _history.Add(move);
+            LogMessage(LogLevel.Debug, $"Move ({move.X}, {move.Y} applied)");
         }
 
         /*
@@ -310,6 +326,10 @@ namespace TicTacToeGame.Common
             _currentPlayer,
             NotCurrentPlayer);
 
+        private void ReportMoveTimeout() => ReportGameEnded(_currentSign == CellSign.O ? GameState.OInvalidTurn : GameState.XInvalidTurn,
+            NotCurrentPlayer,
+            _currentPlayer);
+
         private void ReportCurrentMoveInvalid() => ReportGameEnded(_currentSign == CellSign.O ? GameState.OInvalidTurn : GameState.XInvalidTurn,
             NotCurrentPlayer,
             _currentPlayer);
@@ -326,6 +346,8 @@ namespace TicTacToeGame.Common
         private void OnGameStateChanged(GameStateChangedEventArgs e) => GameStateChanged?.Invoke(this, e);
 
         private void OnGameEnded(GameEndedEventArgs e) => GameEnded?.Invoke(this, e);
+
+        private static void LogMessage(LogLevel level, string message) => Logger.LogEntry("TICTACTOE", level, message);
 
         private readonly int _width;
         private readonly int _height;

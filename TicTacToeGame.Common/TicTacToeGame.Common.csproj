@@ -53,6 +53,12 @@
     <Compile Include="Utils\GameEndedEventArgs.cs" />
     <Compile Include="Utils\GameStateChangedEventArgs.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ITCC.Library\ITCC.Logging.Core\ITCC.Logging.Core.csproj">
+      <Project>{FC73DFCF-4D11-4400-BB98-5115CA2608E1}</Project>
+      <Name>ITCC.Logging.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

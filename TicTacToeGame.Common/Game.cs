@@ -148,13 +148,23 @@ namespace TicTacToeGame.Common
          */
         private bool HorizontalBuilt(Cell move)
         {
-            var xLowerBound = Math.Min(move.X - 4, 0);
-            for (var i = xLowerBound; i < xLowerBound + VictoryLength; ++i)
+            var yLowerBound = Math.Max(move.Y - VictoryLength + 1, 0); // included
+            var yUpperBould = Math.Min(move.Y, _width- VictoryLength); // eycluded
+            for (var yStart = yLowerBound; yStart < yUpperBould - VictoryLength; ++yStart)
             {
-                if (_field[i, move.Y] != _currentSign)
-                    return false;
+                var foundVictory = true;
+                for (var y = yStart; y < yStart + VictoryLength; ++y)
+                {
+                    if (_field[move.X, y] == _currentSign)
+                        continue;
+                    foundVictory = false;
+                    break;
+                }
+
+                if (foundVictory)
+                    return true;
             }
-            return true;
+            return false;
         }
 
         /*
@@ -164,13 +174,23 @@ namespace TicTacToeGame.Common
          */
         private bool VerticalBuilt(Cell move)
         {
-            var yLowerBound = Math.Min(move.Y - 4, 0);
-            for (var i = yLowerBound; i < yLowerBound + VictoryLength; ++i)
+            var xLowerBound = Math.Max(move.X - VictoryLength + 1, 0); // included
+            var xUpperBould = Math.Min(move.X, _height - VictoryLength); // excluded
+            for (var xStart = xLowerBound; xStart < xUpperBould - VictoryLength; ++xStart)
             {
-                if (_field[move.X, i] != _currentSign)
-                    return false;
+                var foundVictory = true;
+                for (var x = xStart; x < xStart + VictoryLength; ++x)
+                {
+                    if (_field[x, move.Y] == _currentSign)
+                        continue;
+                    foundVictory = false;
+                    break;
+                }
+
+                if (foundVictory)
+                    return true;
             }
-            return true;
+            return false;
         }
 
         /*
@@ -180,7 +200,23 @@ namespace TicTacToeGame.Common
          */
         private bool RightDiagonalBuilt(Cell move)
         {
-            return true;
+            var deviationLowerBound = -Math.Min(Math.Min(move.X, move.Y), 4); // included
+            var deviationUpperBound = Math.Min(Math.Min(_height - move.X, _width - move.Y - VictoryLength + 1), 4); // excluded
+            for (var startDeviation = deviationLowerBound; startDeviation < deviationUpperBound; startDeviation++)
+            {
+                var foundVictory = true;
+                for (var deviation = startDeviation; deviation < startDeviation + VictoryLength; ++deviation)
+                {
+                    if (_field[move.X + deviation, move.Y + deviation] == _currentSign)
+                        continue;
+                    foundVictory = false;
+                    break;
+                }
+
+                if (foundVictory)
+                    return true;
+            }
+            return false;
         }
 
         /*

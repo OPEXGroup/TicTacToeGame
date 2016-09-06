@@ -20,7 +20,7 @@ namespace TicTacToeGame.Common
 
         public bool IsValid()
         {
-            if (Width < 5 || Height < 5)
+            if (Width < Game.VictoryLength || Height < Game.VictoryLength)
                 return false;
 
             if (BotTurnLength < 1)

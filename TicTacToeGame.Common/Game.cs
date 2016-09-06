@@ -50,6 +50,12 @@ namespace TicTacToeGame.Common
                     return;
                 }
 
+                if (FieldIsFull())
+                {
+                    ReportDraw();
+                    return;
+                }
+
                 ReportGameStateChanged();
                 MoveNextSign();
             }
@@ -245,6 +251,8 @@ namespace TicTacToeGame.Common
             OnGameStateChanged(changedArgs);
         }
 
+        private bool FieldIsFull() => _step == _width*_height;
+
         private void ReportGameEnded(GameState state, IPlayer winner, IPlayer loser)
         {
             var endArgs = BuildGameEndedEventArgs(state, winner, loser);
@@ -258,6 +266,8 @@ namespace TicTacToeGame.Common
         private void ReportCurrentMoveInvalid() => ReportGameEnded(_currentSign == CellSign.O ? GameState.OInvalidTurn : GameState.XInvalidTurn,
             NotCurrentPlayer,
             _currentPlayer);
+
+        private void ReportDraw() => ReportGameEnded(GameState.Draw, null, null);
 
         private bool MoveIsValid(Cell move)
         {

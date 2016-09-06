@@ -13,6 +13,7 @@ namespace TicTacToeGame.Common.Enums
         XWon,
         OWon,
         XInvalidTurn,
-        OInvalidTurn
+        OInvalidTurn,
+        Draw
     }
 }

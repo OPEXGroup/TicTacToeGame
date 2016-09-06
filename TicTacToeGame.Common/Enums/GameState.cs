@@ -11,6 +11,8 @@ namespace TicTacToeGame.Common.Enums
         XTurn,
         OTurn,
         XWon,
-        OWon
+        OWon,
+        XInvalidTurn,
+        OInvalidTurn
     }
 }

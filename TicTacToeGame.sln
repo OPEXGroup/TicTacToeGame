@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicTacToeGame.WPF", "TicTac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicTacToeGame.Common", "TicTacToeGame.Common\TicTacToeGame.Common.csproj", "{7AE96840-3BE7-47DA-BECE-5A8A44C02A0E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicTacToeGame.Players", "TicTacToeGame.Players\TicTacToeGame.Players.csproj", "{6CA47D57-5E31-4E85-9261-33EAB2318254}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{7AE96840-3BE7-47DA-BECE-5A8A44C02A0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AE96840-3BE7-47DA-BECE-5A8A44C02A0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AE96840-3BE7-47DA-BECE-5A8A44C02A0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CA47D57-5E31-4E85-9261-33EAB2318254}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CA47D57-5E31-4E85-9261-33EAB2318254}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CA47D57-5E31-4E85-9261-33EAB2318254}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CA47D57-5E31-4E85-9261-33EAB2318254}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -100,6 +100,10 @@
       <Project>{7ae96840-3be7-47da-bece-5a8a44c02a0e}</Project>
       <Name>TicTacToeGame.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TicTacToeGame.Players\TicTacToeGame.Players.csproj">
+      <Project>{6ca47d57-5e31-4e85-9261-33eab2318254}</Project>
+      <Name>TicTacToeGame.Players</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -15,6 +15,7 @@ namespace TicTacToeGame.Common
         #region public
 
         public const int VictoryLength = 5;
+        public const int StepWaitInterval = 5;
 
         public Game CreateNewGame(GameConfiguration configuration)
         {
@@ -57,7 +58,16 @@ namespace TicTacToeGame.Common
                 }
 
                 ReportGameStateChanged();
+                WaitStepProcessed();
                 MoveNextSign();
+            }
+        }
+
+        public void ReportStepProcessed()
+        {
+            lock (_stepLock)
+            {
+                _stepProcessed = true;
             }
         }
 
@@ -78,6 +88,19 @@ namespace TicTacToeGame.Common
             _currentSign = CellSign.X;
             _currentPlayer = _firstPlayer;
             _field = new CellSign[_height, _width];
+        }
+
+        private void WaitStepProcessed()
+        {
+            while (true)
+            {
+                lock (_stepLock)
+                {
+                    if (_stepProcessed)
+                        return;
+                }
+                Thread.Sleep(StepWaitInterval);
+            }
         }
 
         private void MoveNextSign()
@@ -294,7 +317,9 @@ namespace TicTacToeGame.Common
         private readonly List<Cell> _history = new List<Cell>();
 
         private bool _started;
+        private bool _stepProcessed;
         private readonly object _stateLock = new object();
+        private readonly object _stepLock = new object();
 
         #endregion
 

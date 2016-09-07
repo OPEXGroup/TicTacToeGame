@@ -125,7 +125,8 @@
                     Margin="10"
                     Content="Start"
                     IsDefault="True"
-                    HorizontalAlignment="Right"></Button>
+                    HorizontalAlignment="Right"
+                    Click="ApplySettingsButton_OnClick"></Button>
         </Grid>
     </Grid>
 </Window>

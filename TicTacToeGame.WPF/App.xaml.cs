@@ -28,8 +28,11 @@ namespace TicTacToeGame.WPF
 
 #if DEBUG
             Logger.Level = LogLevel.Trace;
-            var logWindow = new LogWindow(new ObservableLogger(1000, RunOnUiThread));
-            logWindow.Show();
+            Logger.AddBannedScope("GENERATOR");
+            var logger = new ObservableLogger(1000, RunOnUiThread);
+            Logger.RegisterReceiver(logger);
+            _logWindow = new LogWindow(logger);
+            _logWindow.Show();
 #else
             Logger.Level = LogLevel.None;
 #endif
@@ -72,11 +75,28 @@ namespace TicTacToeGame.WPF
             window.Left = screenWidth / 2 - windowWidth / 2;
             window.Top = screenHeight / 2 - windowHeight / 2;
         }
+
+        public void CloseLogWindow()
+        {
+#if DEBUG
+            try
+            {
+                _logWindow.Close();
+            }
+            catch (Exception)
+            {
+                // Ignore
+            }
+#endif
+        }
         #endregion
 
         #region private
-        private static void LogMessage(LogLevel level, string message) => Logger.LogEntry("WIN MANAGER", level, message);
-        private static void LogException(LogLevel level, Exception exception) => Logger.LogException("WIN MANAGER", level, exception);
+        private static void LogMessage(LogLevel level, string message) => Logger.LogEntry("APP", level, message);
+        private static void LogException(LogLevel level, Exception exception) => Logger.LogException("APP", level, exception);
+
+        private LogWindow _logWindow;
+
         #endregion
     }
 }

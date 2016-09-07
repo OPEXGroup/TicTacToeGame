@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using ITCC.UI.Utils;
 using TicTacToeGame.Common;
+using TicTacToeGame.Common.Interfaces;
 using TicTacToeGame.Players;
 using TicTacToeGame.Players.Enums;
 
@@ -28,9 +30,47 @@ namespace TicTacToeGame.WPF.UI.Windows
         private string _firstPlayerCachedName = string.Empty;
         private string _secondPlayerCachedName = string.Empty;
 
+        private IPlayer _firstPlayer;
+        private IPlayer _secondPlayer;
+        private int _width;
+        private int _height;
+        private const int BotTurnLength = 1000;
+
         public SettingsWindow()
         {
             InitializeComponent();
+        }
+
+        private void FillBotDict()
+        {
+            var botEnumValues = Enum.GetValues(typeof(BotKind)).Cast<BotKind>().ToList();
+            foreach (var botEnumValue in botEnumValues)
+            {
+                var bot = BotFactory.BuildBot(botEnumValue);
+                var name = bot.Name ?? botEnumValue.ToString();
+                if (name != HumanPlayerName)
+                    _botKindToNameDict.Add(botEnumValue, name);
+            }
+        }
+
+        private bool ConfigCorrect()
+        {
+            var validator = new ConditionValidator();
+
+            validator.NonWhitespaceString(FirstPlayerNameTextBox.Text, "First player name is empty!");
+            validator.NonWhitespaceString(SecondPlayerNameTextBox.Text, "Second player name is empty!");
+            validator.NonWhitespaceString(FieldWidthTextBox.Text, "Width is incorrect");
+            validator.NonWhitespaceString(FieldHeightTextBox.Text, "Height is incorrect");
+            int tmp;
+            validator.AddCondition(int.TryParse(FieldWidthTextBox.Text, out tmp), "Width is incorrect");
+            validator.AddCondition(tmp >= Game.VictoryLength, "Width is incorrect");
+            validator.AddCondition(int.TryParse(FieldHeightTextBox.Text, out tmp), "Height is incorrect");
+            validator.AddCondition(tmp >= Game.VictoryLength, "Height is incorrect");
+
+            if (! validator.ValidationPassed)
+                Helpers.ShowWarning(validator.ErrorMessage);
+
+            return validator.ValidationPassed;
         }
 
         private void SettingsWindow_OnLoaded(object sender, RoutedEventArgs e)
@@ -42,18 +82,6 @@ namespace TicTacToeGame.WPF.UI.Windows
             SecondPlayerComboBox.ItemsSource = _playerNameList;
             FirstPlayerComboBox.SelectedItem = HumanPlayerName;
             SecondPlayerComboBox.SelectedItem = HumanPlayerName;
-        }
-
-        private void FillBotDict()
-        {
-            var botEnumValues = Enum.GetValues(typeof (BotKind)).Cast<BotKind>().ToList();
-            foreach (var botEnumValue in botEnumValues)
-            {
-                var bot = BotFactory.BuildBot(botEnumValue);
-                var name = bot.Name ?? botEnumValue.ToString();
-                if (name != HumanPlayerName)
-                    _botKindToNameDict.Add(botEnumValue, name);
-            }
         }
 
         private void FirstPlayerComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -68,11 +96,13 @@ namespace TicTacToeGame.WPF.UI.Windows
                 var bot = BotFactory.BuildBot(botKind);
                 FirstPlayerNameTextBox.IsEnabled = false;
                 _firstPlayerCachedName = FirstPlayerNameTextBox.Text;
+                _firstPlayer = bot;
                 FirstPlayerNameTextBox.Text = bot.Name;
             }
             else
             {
                 FirstPlayerNameTextBox.Text = _firstPlayerCachedName;
+                _firstPlayer = new HumanPlayer(_firstPlayerCachedName);
                 FirstPlayerNameTextBox.IsEnabled = true;
             }
         }
@@ -89,13 +119,38 @@ namespace TicTacToeGame.WPF.UI.Windows
                 var bot = BotFactory.BuildBot(botKind);
                 SecondPlayerNameTextBox.IsEnabled = false;
                 _secondPlayerCachedName = SecondPlayerNameTextBox.Text;
+                _secondPlayer = bot;
                 SecondPlayerNameTextBox.Text = bot.Name;
             }
             else
             {
                 SecondPlayerNameTextBox.Text = _secondPlayerCachedName;
+                _secondPlayer = new HumanPlayer(_secondPlayerCachedName);
                 SecondPlayerNameTextBox.IsEnabled = true;
             }
+        }
+
+        private void ApplySettingsButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (!ConfigCorrect())
+                return;
+
+            _width = Convert.ToInt32(FieldWidthTextBox.Text);
+            _height = Convert.ToInt32(FieldHeightTextBox.Text);
+
+            // Update names
+            if (_firstPlayer is HumanPlayer)
+                _firstPlayer = new HumanPlayer(FirstPlayerNameTextBox.Text);
+            if (_secondPlayer is HumanPlayer)
+                _secondPlayer = new HumanPlayer(FirstPlayerNameTextBox.Text);
+
+            Configuration.Width = _width;
+            Configuration.Height = _height;
+            Configuration.FirstPlayer = _firstPlayer;
+            Configuration.SecondPlayer = _secondPlayer;
+            Configuration.BotTurnLength = BotTurnLength;
+
+            Close();
         }
     }
 }

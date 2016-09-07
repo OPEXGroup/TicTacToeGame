@@ -8,7 +8,8 @@
         Title="Tic-tac-toe"
         Height="600"
         Width="800"
-        Loaded="GameWindow_OnLoaded">
+        Loaded="GameWindow_OnLoaded"
+        Closing="GameWindow_OnClosing">
     <Window.Resources>
         <Style TargetType="Label">
             <Style.Setters>

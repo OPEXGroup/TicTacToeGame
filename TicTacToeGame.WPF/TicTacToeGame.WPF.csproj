@@ -56,6 +56,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="UI\Helpers.cs" />
+    <Compile Include="UI\Windows\GameWindow.xaml.cs">
+      <DependentUpon>GameWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Windows\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
@@ -64,6 +68,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Themes\ApplicationTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\GameWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -100,6 +108,18 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ITCC.Library\ITCC.Logging.Core\ITCC.Logging.Core.csproj">
+      <Project>{fc73dfcf-4d11-4400-bb98-5115ca2608e1}</Project>
+      <Name>ITCC.Logging.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ITCC.Library\ITCC.Logging.Windows\ITCC.Logging.Windows.csproj">
+      <Project>{bbc8b7e2-bfc2-4b03-bd01-5b6bd10649c1}</Project>
+      <Name>ITCC.Logging.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ITCC.Library\ITCC.UI\ITCC.UI.csproj">
+      <Project>{07d36841-8876-437c-b7a4-cbf1012513eb}</Project>
+      <Name>ITCC.UI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TicTacToeGame.Common\TicTacToeGame.Common.csproj">
       <Project>{7ae96840-3be7-47da-bece-5a8a44c02a0e}</Project>
       <Name>TicTacToeGame.Common</Name>
@@ -108,6 +128,14 @@
       <Project>{6ca47d57-5e31-4e85-9261-33eab2318254}</Project>
       <Name>TicTacToeGame.Players</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\O.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\X.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,0 +1,57 @@
+﻿<Window x:Class="TicTacToeGame.WPF.UI.Windows.GameWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TicTacToeGame.WPF.UI.Windows"
+        mc:Ignorable="d"
+        Title="Tic-tac-toe"
+        Height="600"
+        Width="800"
+        Loaded="GameWindow_OnLoaded">
+    <Window.Resources>
+        <Style TargetType="Label">
+            <Style.Setters>
+                <Setter Property="Margin" Value="10"></Setter>
+            </Style.Setters>
+        </Style>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <Grid Name="FieldGrid"
+              Grid.Column="0"
+              Margin="10"></Grid>
+        
+        <Grid Name="StatsGrid"
+              Grid.Column="1">
+            <Grid.RowDefinitions> 
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            
+            <Label Name="FirstPlayerNameLabel"
+                   Grid.Row="0"
+                   HorizontalAlignment="Stretch"
+                   HorizontalContentAlignment="Center"></Label>
+
+            <Label Name="VsLabel"
+                   Grid.Row="1"
+                   HorizontalAlignment="Stretch"
+                   HorizontalContentAlignment="Center"
+                   FontSize="16"
+                   FontWeight="Bold"
+                   Content="VS"></Label>
+
+            <Label Name="SecondPlayerNameLabel"
+                   Grid.Row="2"
+                   HorizontalAlignment="Stretch"
+                   HorizontalContentAlignment="Center"></Label>
+        </Grid>
+    </Grid>
+</Window>

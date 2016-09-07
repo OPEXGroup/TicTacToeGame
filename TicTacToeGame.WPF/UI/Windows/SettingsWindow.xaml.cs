@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using TicTacToeGame.Common;
 using TicTacToeGame.Players;
 using TicTacToeGame.Players.Enums;
 
@@ -21,6 +14,11 @@ namespace TicTacToeGame.WPF.UI.Windows
     /// </summary>
     public partial class SettingsWindow : Window
     {
+        /// <summary>
+        ///     This will be filled on settings apply
+        /// </summary>
+        public GameConfiguration Configuration;
+
         private const string HumanPlayerName = "HUMAN";
 
         private readonly Dictionary<BotKind, string> _botKindToNameDict = new Dictionary<BotKind, string>(); 

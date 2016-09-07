@@ -42,7 +42,7 @@ namespace TicTacToeGame.WPF
             LogMessage(LogLevel.Info, "Application ready");
         }
 
-        public static void RunOnUiThread(Action action) => Current.Dispatcher.Invoke(action);
+        public static void RunOnUiThread(Action action) => Current.Dispatcher.BeginInvoke(action);
 
         public static void LoadDialog<TWindow>(Window current, Action<TWindow> prepareAction = null, bool centerWindowOnScreen = false)
             where TWindow : Window, new()

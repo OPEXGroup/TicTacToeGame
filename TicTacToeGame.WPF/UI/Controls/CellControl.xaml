@@ -13,8 +13,8 @@
             <Image Name="SignImage"
                    HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch"
-                   Stretch="Uniform"
-                   Source="../../Assets/O.png"
+                   Stretch="UniformToFill"
+                   Source="../../Assets/Empty.png"
                    MouseLeftButtonUp="CellControll_OnClick"
                    ></Image>
         </Border>

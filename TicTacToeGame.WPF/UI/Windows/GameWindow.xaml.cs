@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using ITCC.Logging.Core;
@@ -25,6 +27,7 @@ namespace TicTacToeGame.WPF.UI.Windows
         private bool _waitingForTurn;
         private readonly object _stateLock = new object();
         private IPlayer _currentPlayer;
+        private CellSign _currentSign;
 
         public GameWindow()
         {
@@ -54,6 +57,7 @@ namespace TicTacToeGame.WPF.UI.Windows
             }
 
             _currentPlayer = _configuration.FirstPlayer;
+            _currentSign = CellSign.X;
             FirstPlayerNameLabel.Content = PlayerDescription(_configuration.FirstPlayer);
             SecondPlayerNameLabel.Content = PlayerDescription(_configuration.SecondPlayer);
 
@@ -112,6 +116,7 @@ namespace TicTacToeGame.WPF.UI.Windows
             _currentPlayer = _currentPlayer == _configuration.FirstPlayer
                 ? _configuration.SecondPlayer
                 : _configuration.FirstPlayer;
+            _currentSign = _currentSign == CellSign.O ? CellSign.X : CellSign.O;
         }
 
         private bool IsHumansTurn() => _currentPlayer.Type == PlayerType.Human;
@@ -141,6 +146,8 @@ namespace TicTacToeGame.WPF.UI.Windows
         {
             var winnerMessage = gameEndedEventArgs.Winner == null ? "Draw" : $"{gameEndedEventArgs.Winner.Name} won";
             LogMessage(LogLevel.Debug, $"Game ended, {winnerMessage}");
+            var lastMove = gameEndedEventArgs.History.Last();
+            App.RunOnUiThread(() => _cellControls[lastMove.X, lastMove.Y].LoadPicture(_currentSign));
             App.RunOnUiThread(() => WinnerLabel.Content = winnerMessage);
         }
 
@@ -160,6 +167,7 @@ namespace TicTacToeGame.WPF.UI.Windows
                     _waitingForTurn = true;
                 }
             }
+            Thread.Sleep(200);
             _game.ReportStepProcessed();
             LogMessage(LogLevel.Debug, $"Step {gameStateChangedEventArgs.CurrentState.Step} processed");
         }
@@ -179,9 +187,5 @@ namespace TicTacToeGame.WPF.UI.Windows
 
         private void GameWindow_OnClosing(object sender, CancelEventArgs e) => ((App)Application.Current).CloseLogWindow();
 
-        private void TestButton_OnClick(object o, RoutedEventArgs e)
-        {
-            LogMessage(LogLevel.Trace, "kasd;lkas;ldkas;dkas;ldka;lsdka;sldk");
-        }
     }
 }

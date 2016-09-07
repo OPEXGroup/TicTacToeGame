@@ -15,6 +15,24 @@ namespace TicTacToeGame.WPF.UI.Controls
         private int _x;
         private int _y;
         private Action<int, int> _clickCallback;
+        private static readonly BitmapImage XImage;
+        private static readonly BitmapImage OImage;
+
+
+        static CellControl()
+        {
+            XImage = new BitmapImage();
+            XImage.BeginInit();
+            XImage.UriSource = new Uri("Assets/X.png", UriKind.Relative);
+            XImage.CacheOption = BitmapCacheOption.OnLoad;
+            XImage.EndInit();
+
+            OImage = new BitmapImage();
+            OImage.BeginInit();
+            OImage.UriSource = new Uri("Assets/O.png", UriKind.Relative);
+            OImage.CacheOption = BitmapCacheOption.OnLoad;
+            OImage.EndInit();
+        }
 
         public CellControl()
         {
@@ -30,11 +48,8 @@ namespace TicTacToeGame.WPF.UI.Controls
 
         public void LoadPicture(CellSign sign)
         {
-            var path = sign == CellSign.O ? "Assets/O.png" : "Assets/X.png";
-            SignImage.BeginInit();
-            SignImage.Source = new BitmapImage(new Uri(path, UriKind.Relative));
-            SignImage.EndInit();
-            Logger.LogEntry("DRAW", LogLevel.Trace, $"{path} loaded into cell ({_x}, {_y})");
+            SignImage.Source = sign == CellSign.O ? OImage : XImage;
+            Logger.LogEntry("DRAW", LogLevel.Trace, $"{sign} loaded into cell ({_x}, {_y})");
         }
 
         private void CellControll_OnClick(object sender, MouseButtonEventArgs e) => _clickCallback?.Invoke(_x, _y);

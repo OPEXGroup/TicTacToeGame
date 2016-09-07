@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="BotFactory.cs" />
     <Compile Include="BotPlayer.cs" />
+    <Compile Include="Bots\NibblerBot.cs" />
     <Compile Include="Bots\TrivialBot.cs" />
     <Compile Include="Enums\BotKind.cs" />
     <Compile Include="HumanPlayer.cs" />

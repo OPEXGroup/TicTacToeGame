@@ -11,6 +11,8 @@ namespace TicTacToeGame.Players
             {
                 case BotKind.Trivial:
                     return new TrivialBot();
+                case BotKind.Nibbler:
+                    return new NibblerBot();
                 default:
                     return null;
             }

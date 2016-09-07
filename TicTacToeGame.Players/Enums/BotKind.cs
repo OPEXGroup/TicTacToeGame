@@ -2,6 +2,7 @@
 {
     public enum BotKind
     {
-        Trivial
+        Trivial,
+        Nibbler
     }
 }

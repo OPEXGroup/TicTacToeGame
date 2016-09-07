@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TicTacToeGame.WPF.UI.Windows"
         mc:Ignorable="d"
-        Title="Настройки"
+        Title="Settings"
         Height="280"
         Width="600"
         ResizeMode="NoResize"
@@ -38,7 +38,7 @@
                HorizontalContentAlignment="Center"
                VerticalContentAlignment="Center"
                FontWeight="Bold"
-               Content="Крестики-нолики"></Label>
+               Content="Tic-tac-toe"></Label>
         
         <Grid Name="FourColumnGrid"
               Grid.Row="1">
@@ -103,7 +103,7 @@
             <Label Name="FieldWidthLabel"
                    Grid.Row="2"
                    Grid.Column="0"
-                   Content="First player name:"></Label>
+                   Content="Field width:"></Label>
 
             <TextBox Name="FieldWidthTextBox"
                      Grid.Row="2"
@@ -112,7 +112,7 @@
             <Label Name="FieldHeightLabel"
                    Grid.Row="2"
                    Grid.Column="2"
-                   Content="Second player name:"></Label>
+                   Content="Field height:"></Label>
 
             <TextBox Name="FieldHeightTextBox"
                      Grid.Row="2"
@@ -123,7 +123,7 @@
                     Grid.Column="3"
                     Width="80"
                     Margin="10"
-                    Content="Начать"
+                    Content="Start"
                     IsDefault="True"
                     HorizontalAlignment="Right"></Button>
         </Grid>

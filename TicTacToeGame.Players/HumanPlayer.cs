@@ -27,8 +27,9 @@ namespace TicTacToeGame.Players
                         return tmp;
                     }
                 }
-                // Logger.LogEntry("HUMAN", LogLevel.Trace, "Waiting for human turn");
+                Logger.LogEntry("HUMAN", LogLevel.Trace, "Waiting for human turn");
                 Thread.Sleep(MoveCheckInterval);
+                return null;
             }
         }
         #endregion

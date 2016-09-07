@@ -71,6 +71,7 @@ namespace TicTacToeGame.Common
 
         private void GameLoop()
         {
+            LogMessage(LogLevel.Info, "Game loop started");
             while (true)
             {
                 _step++;
@@ -78,7 +79,10 @@ namespace TicTacToeGame.Common
 
                 if (move == null)
                 {
-                    LogMessage(LogLevel.Info, $"Move by {_currentPlayer.Name} took longer than {_botTurnLength}ms, {NotCurrentPlayer.Name} won");
+                    if (_currentPlayer.Type == PlayerType.Bot)
+                        LogMessage(LogLevel.Info, $"Move by {_currentPlayer.Name} took longer than {_botTurnLength}ms, {NotCurrentPlayer.Name} won");
+                    else
+                        LogMessage(LogLevel.Info, $"{_currentPlayer.Name} tried to submit null move");
                     ReportCurrentMoveInvalid();
                     return;
                 }

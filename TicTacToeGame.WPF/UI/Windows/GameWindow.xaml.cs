@@ -63,12 +63,11 @@ namespace TicTacToeGame.WPF.UI.Windows
             LoadCellControls();
 
             _game.Start();
-            if (IsHumansTurn())
+            if (!IsHumansTurn())
+                return;
+            lock (_stateLock)
             {
-                lock (_stateLock)
-                {
-                    _waitingForTurn = true;
-                }
+                _waitingForTurn = true;
             }
         }
 

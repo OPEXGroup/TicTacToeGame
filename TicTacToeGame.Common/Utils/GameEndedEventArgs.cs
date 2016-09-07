@@ -19,5 +19,6 @@ namespace TicTacToeGame.Common.Utils
         public int Width { get; set; }
         public int Height { get; set; }
         public List<Cell> History { get; set; }
+        public List<Cell> WinningSet { get; set; }
     }
 }

@@ -95,10 +95,11 @@ namespace TicTacToeGame.Common
                 }
 
                 ApplyMove(move);
-                if (LastMoveVictorious())
+                var winningSet = GetWinningSet();
+                if (winningSet != null)
                 {
                     LogMessage(LogLevel.Info, $"{_currentPlayer.Name} won with ({move.X}, {move.Y}) move");
-                    ReportCurrentPlayerWon();
+                    ReportCurrentPlayerWon(winningSet);
                     return;
                 }
 
@@ -165,7 +166,7 @@ namespace TicTacToeGame.Common
             CurrentPlayer = _currentPlayer
         };
 
-        private GameEndedEventArgs BuildGameEndedEventArgs(GameState state, IPlayer winner, IPlayer loser) => new GameEndedEventArgs
+        private GameEndedEventArgs BuildGameEndedEventArgs(GameState state, IPlayer winner, IPlayer loser, List<Cell> winningSet) => new GameEndedEventArgs
         {
             Field = BuildFieldCopy(),
             Height = _height,
@@ -173,7 +174,8 @@ namespace TicTacToeGame.Common
             Loser = loser,
             State =  state,
             Width = _width,
-            Winner = winner
+            Winner = winner,
+            WinningSet = winningSet
         };
 
         private Cell GetNextMove()
@@ -205,15 +207,18 @@ namespace TicTacToeGame.Common
          * XXX - This kind of situation
          *  O
          */
-        private bool HorizontalBuilt(Cell move)
+        private List<Cell> HorizontalBuilt(Cell move)
         {
             var yLowerBound = Math.Max(move.Y - VictoryLength + 1, 0); // included
-            var yUpperBould = Math.Min(move.Y, _width- VictoryLength); // eycluded
-            for (var yStart = yLowerBound; yStart < yUpperBould - VictoryLength; ++yStart)
+            var yUpperBould = Math.Min(move.Y + 1, _width - VictoryLength + 1); // excluded
+            var result = new List<Cell>();
+            for (var yStart = yLowerBound; yStart < yUpperBould; ++yStart)
             {
                 var foundVictory = true;
+                result.Clear();
                 for (var y = yStart; y < yStart + VictoryLength; ++y)
                 {
+                    result.Add(new Cell(move.X, y));
                     if (_field[move.X, y] == _currentSign)
                         continue;
                     foundVictory = false;
@@ -221,9 +226,9 @@ namespace TicTacToeGame.Common
                 }
 
                 if (foundVictory)
-                    return true;
+                    return result;
             }
-            return false;
+            return null;
         }
 
         /*
@@ -231,15 +236,18 @@ namespace TicTacToeGame.Common
          * OXO - This kind of situation
          *  X
          */
-        private bool VerticalBuilt(Cell move)
+        private List<Cell> VerticalBuilt(Cell move)
         {
             var xLowerBound = Math.Max(move.X - VictoryLength + 1, 0); // included
-            var xUpperBould = Math.Min(move.X, _height - VictoryLength); // excluded
-            for (var xStart = xLowerBound; xStart < xUpperBould - VictoryLength; ++xStart)
+            var xUpperBould = Math.Min(move.X + 1, _height - VictoryLength + 1); // excluded
+            var result = new List<Cell>();
+            for (var xStart = xLowerBound; xStart < xUpperBould; ++xStart)
             {
                 var foundVictory = true;
+                result.Clear();
                 for (var x = xStart; x < xStart + VictoryLength; ++x)
                 {
+                    result.Add(new Cell(x, move.Y));
                     if (_field[x, move.Y] == _currentSign)
                         continue;
                     foundVictory = false;
@@ -247,9 +255,9 @@ namespace TicTacToeGame.Common
                 }
 
                 if (foundVictory)
-                    return true;
+                    return result;
             }
-            return false;
+            return null;
         }
 
         /*
@@ -257,15 +265,20 @@ namespace TicTacToeGame.Common
          * OXO - This kind of situation
          * X  
          */
-        private bool RightDiagonalBuilt(Cell move)
+        private List<Cell> RightDiagonalBuilt(Cell move)
         {
-            var deviationLowerBound = -Math.Min(Math.Min(move.X, VictoryLength - 1), -Math.Min(1, _width - move.Y - VictoryLength + 1)); // included
-            var deviationUpperBound = Math.Min(Math.Min(_height - move.X - VictoryLength + 1, 1), -Math.Min(move.Y - 1, VictoryLength - 2)); // excluded
+            var deviationLowerBound = Math.Min(-Math.Min(move.X, VictoryLength - 1), Math.Min(-1, _width - move.Y - VictoryLength + 1)); // included
+            var deviationUpperBound = Math.Min(Math.Min(_height - move.X - VictoryLength + 1, 1), Math.Min(move.Y - 1, 1)); // excluded
+            Logger.LogEntry("DIAG", LogLevel.Info, $"{deviationLowerBound} {deviationUpperBound}");
+
+            var result = new List<Cell>();
             for (var startDeviation = deviationLowerBound; startDeviation < deviationUpperBound; startDeviation++)
             {
                 var foundVictory = true;
+                result.Clear();
                 for (var deviation = startDeviation; deviation < startDeviation + VictoryLength; ++deviation)
                 {
+                    result.Add(new Cell(move.X + deviation, move.Y - deviation));
                     if (_field[move.X + deviation, move.Y - deviation] == _currentSign)
                         continue;
                     foundVictory = false;
@@ -273,9 +286,9 @@ namespace TicTacToeGame.Common
                 }
 
                 if (foundVictory)
-                    return true;
+                    return result;
             }
-            return false;
+            return null;
         }
 
         /*
@@ -283,15 +296,19 @@ namespace TicTacToeGame.Common
          * OXO - This kind of situation
          * O X  
          */
-        private bool LeftDiagonalBuilt(Cell move)
+        private List<Cell> LeftDiagonalBuilt(Cell move)
         {
             var deviationLowerBound = -Math.Min(Math.Min(move.X, move.Y), VictoryLength - 1); // included
             var deviationUpperBound = Math.Min(Math.Min(_height - move.X - VictoryLength + 1, _width - move.Y - VictoryLength + 1), 1); // excluded
+
+            var result = new List<Cell>();
             for (var startDeviation = deviationLowerBound; startDeviation < deviationUpperBound; startDeviation++)
             {
                 var foundVictory = true;
+                result.Clear();
                 for (var deviation = startDeviation; deviation < startDeviation + VictoryLength; ++deviation)
                 {
+                    result.Add(new Cell(move.X + deviation, move.Y + deviation));
                     if (_field[move.X + deviation, move.Y + deviation] == _currentSign)
                         continue;
                     foundVictory = false;
@@ -299,19 +316,16 @@ namespace TicTacToeGame.Common
                 }
 
                 if (foundVictory)
-                    return true;
+                    return result;
             }
-            return false;
+            return null;
         }
 
-        private bool LastMoveVictorious()
+        private List<Cell> GetWinningSet()
         {
             var lastMove = GetLastMove();
 
-            return VerticalBuilt(lastMove)
-                   || HorizontalBuilt(lastMove)
-                   || RightDiagonalBuilt(lastMove)
-                   || LeftDiagonalBuilt(lastMove);
+            return VerticalBuilt(lastMove) ?? HorizontalBuilt(lastMove) ?? RightDiagonalBuilt(lastMove) ?? LeftDiagonalBuilt(lastMove);
         }
 
         private void ReportGameStateChanged()
@@ -322,25 +336,28 @@ namespace TicTacToeGame.Common
 
         private bool FieldIsFull() => _step == _width*_height;
 
-        private void ReportGameEnded(GameState state, IPlayer winner, IPlayer loser)
+        private void ReportGameEnded(GameState state, IPlayer winner, IPlayer loser, List<Cell> winningSet)
         {
-            var endArgs = BuildGameEndedEventArgs(state, winner, loser);
+            var endArgs = BuildGameEndedEventArgs(state, winner, loser, winningSet);
             OnGameEnded(endArgs);
         }
 
-        private void ReportCurrentPlayerWon() => ReportGameEnded(_currentSign == CellSign.O ? GameState.OWon : GameState.XWon,
+        private void ReportCurrentPlayerWon(List<Cell> winningSet) => ReportGameEnded(_currentSign == CellSign.O ? GameState.OWon : GameState.XWon,
             _currentPlayer,
-            NotCurrentPlayer);
+            NotCurrentPlayer,
+            winningSet);
 
         private void ReportMoveTimeout() => ReportGameEnded(_currentSign == CellSign.O ? GameState.OInvalidTurn : GameState.XInvalidTurn,
             NotCurrentPlayer,
-            _currentPlayer);
+            _currentPlayer,
+            null);
 
         private void ReportCurrentMoveInvalid() => ReportGameEnded(_currentSign == CellSign.O ? GameState.OInvalidTurn : GameState.XInvalidTurn,
             NotCurrentPlayer,
-            _currentPlayer);
+            _currentPlayer,
+            null);
 
-        private void ReportDraw() => ReportGameEnded(GameState.Draw, null, null);
+        private void ReportDraw() => ReportGameEnded(GameState.Draw, null, null, null);
 
         private bool MoveIsValid(Cell move)
         {

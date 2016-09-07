@@ -155,6 +155,18 @@ namespace TicTacToeGame.WPF.UI.Windows
             LogMessage(LogLevel.Debug, $"Game ended, {winnerMessage}");
             var lastMove = gameEndedEventArgs.History.Last();
             App.RunOnUiThread(() => _cellControls[lastMove.X, lastMove.Y].LoadPicture(_currentSign));
+
+            if (gameEndedEventArgs.WinningSet != null)
+            {
+                App.RunOnUiThread(() =>
+                {
+                    foreach (var cell in gameEndedEventArgs.WinningSet)
+                    {
+                        _cellControls[cell.X, cell.Y].LoadWonPicture(_currentSign);
+                    }
+                });
+            }
+
             App.RunOnUiThread(() => WinnerLabel.Content = winnerMessage);
         }
 

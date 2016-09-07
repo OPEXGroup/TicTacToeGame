@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using ITCC.Logging.Core;
 using TicTacToeGame.Common.Enums;
@@ -17,21 +18,26 @@ namespace TicTacToeGame.WPF.UI.Controls
         private Action<int, int> _clickCallback;
         private static readonly BitmapImage XImage;
         private static readonly BitmapImage OImage;
+        private static readonly BitmapImage XWonImage;
+        private static readonly BitmapImage OWonImage;
 
 
         static CellControl()
         {
-            XImage = new BitmapImage();
-            XImage.BeginInit();
-            XImage.UriSource = new Uri("Assets/X.png", UriKind.Relative);
-            XImage.CacheOption = BitmapCacheOption.OnLoad;
-            XImage.EndInit();
+            XImage = BuildImage("Assets/X.png");
+            OImage = BuildImage("Assets/O.png");
+            XWonImage = BuildImage("Assets/XWon.png");
+            OWonImage = BuildImage("Assets/OWon.png");
+        }
 
-            OImage = new BitmapImage();
-            OImage.BeginInit();
-            OImage.UriSource = new Uri("Assets/O.png", UriKind.Relative);
-            OImage.CacheOption = BitmapCacheOption.OnLoad;
-            OImage.EndInit();
+        private static BitmapImage BuildImage(string filename)
+        {
+            var result = new BitmapImage();
+            result.BeginInit();
+            result.UriSource = new Uri(filename, UriKind.Relative);
+            result.CacheOption = BitmapCacheOption.OnLoad;
+            result.EndInit();
+            return result;
         }
 
         public CellControl()
@@ -50,6 +56,11 @@ namespace TicTacToeGame.WPF.UI.Controls
         {
             SignImage.Source = sign == CellSign.O ? OImage : XImage;
             Logger.LogEntry("DRAW", LogLevel.Trace, $"{sign} loaded into cell ({_x}, {_y})");
+        }
+
+        public void LoadWonPicture(CellSign sign)
+        {
+            SignImage.Source = sign == CellSign.O ? OWonImage : XWonImage;
         }
 
         private void CellControll_OnClick(object sender, MouseButtonEventArgs e) => _clickCallback?.Invoke(_x, _y);

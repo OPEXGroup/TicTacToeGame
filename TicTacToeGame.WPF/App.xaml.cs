@@ -15,6 +15,8 @@ namespace TicTacToeGame.WPF
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            ShutdownMode = ShutdownMode.OnLastWindowClose;
+
             DispatcherUnhandledException += (sender, args) =>
             {          
                 LogException(LogLevel.Critical, args.Exception);

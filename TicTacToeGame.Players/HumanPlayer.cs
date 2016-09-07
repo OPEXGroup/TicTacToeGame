@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using ITCC.Logging.Core;
 using TicTacToeGame.Common.Enums;
 using TicTacToeGame.Common.Interfaces;
 using TicTacToeGame.Common.Utils;
@@ -26,6 +27,7 @@ namespace TicTacToeGame.Players
                         return tmp;
                     }
                 }
+                // Logger.LogEntry("HUMAN", LogLevel.Trace, "Waiting for human turn");
                 Thread.Sleep(MoveCheckInterval);
             }
         }
@@ -48,6 +50,7 @@ namespace TicTacToeGame.Players
                 if (_nextMove != null)
                     throw new InvalidOperationException("Next move is already set");
 
+                Logger.LogEntry("HUMAN", LogLevel.Trace, $"Move queued: ({move.X}, {move.Y})");
                 _nextMove = new Cell(move.X, move.Y);
             }
         }

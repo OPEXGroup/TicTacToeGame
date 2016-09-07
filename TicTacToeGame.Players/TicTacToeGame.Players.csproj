@@ -49,6 +49,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ITCC.Library\ITCC.Logging.Core\ITCC.Logging.Core.csproj">
+      <Project>{FC73DFCF-4D11-4400-BB98-5115CA2608E1}</Project>
+      <Name>ITCC.Logging.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TicTacToeGame.Common\TicTacToeGame.Common.csproj">
       <Project>{7ae96840-3be7-47da-bece-5a8a44c02a0e}</Project>
       <Name>TicTacToeGame.Common</Name>

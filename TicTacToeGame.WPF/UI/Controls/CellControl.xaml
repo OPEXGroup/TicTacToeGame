@@ -9,12 +9,13 @@
     <Grid>
         <Border BorderThickness="1"
                 BorderBrush="Black"
-                MouseLeftButtonUp="CellControll_OnClick">
+                >
             <Image Name="SignImage"
                    HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch"
                    Stretch="Uniform"
                    Source="../../Assets/Empty.png"
+                   MouseLeftButtonUp="CellControll_OnClick"
                    ></Image>
         </Border>
     </Grid>

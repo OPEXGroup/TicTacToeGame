@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -30,6 +31,7 @@ namespace TicTacToeGame.WPF.UI.Controls
             OWonImage = BuildImage("Assets/OWon.png");
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BitmapImage BuildImage(string filename)
         {
             var result = new BitmapImage();

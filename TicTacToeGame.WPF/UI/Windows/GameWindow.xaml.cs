@@ -28,6 +28,7 @@ namespace TicTacToeGame.WPF.UI.Windows
         private readonly object _stateLock = new object();
         private IPlayer _currentPlayer;
         private CellSign _currentSign;
+        private CellSign[,] _fieldState;
 
         public GameWindow()
         {
@@ -97,6 +98,7 @@ namespace TicTacToeGame.WPF.UI.Windows
             var height = _configuration.Height;
             var width = _configuration.Width;
 
+            _fieldState = new CellSign[height, width];
             _cellControls = new CellControl[height, width];
             for (var i = 0; i < height; ++i)
             {
@@ -124,6 +126,11 @@ namespace TicTacToeGame.WPF.UI.Windows
         private void ProcessCellClick(int row, int column)
         {
             LogMessage(LogLevel.Trace, $"Cell ({row}, {column}) clicked");
+
+            if (_fieldState[row, column] != CellSign.Empty)
+            {
+                return;
+            }
 
             lock (_stateLock)
             {
@@ -155,6 +162,13 @@ namespace TicTacToeGame.WPF.UI.Windows
         {
             LogMessage(LogLevel.Debug, $"Game state changed, step {gameStateChangedEventArgs.CurrentState.Step}");
 
+            for (var i = 0; i < gameStateChangedEventArgs.CurrentState.Height; ++i)
+            {
+                for (var j = 0; j < gameStateChangedEventArgs.CurrentState.Width; ++j)
+                {
+                    _fieldState[i, j] = gameStateChangedEventArgs.CurrentState.Field[i, j];
+                }
+            }
             var lastMove = gameStateChangedEventArgs.CurrentState.LastMove;
             var currentSign = gameStateChangedEventArgs.CurrentState.PlayerSign;
             App.RunOnUiThread(() => _cellControls[lastMove.X, lastMove.Y].LoadPicture(currentSign));

@@ -1,10 +1,14 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
 using ITCC.Logging.Core;
 using TicTacToeGame.Common;
+using TicTacToeGame.Common.Enums;
 using TicTacToeGame.Common.Interfaces;
 using TicTacToeGame.Common.Utils;
+using TicTacToeGame.Players;
+using TicTacToeGame.WPF.UI.Controls;
 
 namespace TicTacToeGame.WPF.UI.Windows
 {
@@ -15,6 +19,12 @@ namespace TicTacToeGame.WPF.UI.Windows
     {
         private GameConfiguration _configuration;
         private Game _game;
+
+        private CellControl[,] _cellControls;
+
+        private bool _waitingForTurn;
+        private readonly object _stateLock = new object();
+        private IPlayer _currentPlayer;
 
         public GameWindow()
         {
@@ -43,12 +53,89 @@ namespace TicTacToeGame.WPF.UI.Windows
                 return;
             }
 
+            _currentPlayer = _configuration.FirstPlayer;
             FirstPlayerNameLabel.Content = PlayerDescription(_configuration.FirstPlayer);
             SecondPlayerNameLabel.Content = PlayerDescription(_configuration.SecondPlayer);
 
             _game.GameStateChanged += ProcessGameStateChanged;
             _game.GameEnded += ProcessGameEnded;
+            ReloadGrid();
+            LoadCellControls();
+
             _game.Start();
+            if (IsHumansTurn())
+            {
+                lock (_stateLock)
+                {
+                    _waitingForTurn = true;
+                }
+            }
+        }
+
+        private void ReloadGrid()
+        {
+            FieldGrid.Children.Clear();
+            FieldGrid.RowDefinitions.Clear();
+            FieldGrid.ColumnDefinitions.Clear();
+
+            for (var i = 0; i < _configuration.Height; ++i)
+            {
+                FieldGrid.RowDefinitions.Add(new RowDefinition());
+            }
+
+            for (var i = 0; i < _configuration.Width; ++i)
+            {
+                FieldGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            }
+        }
+
+        private void LoadCellControls()
+        {
+            var height = _configuration.Height;
+            var width = _configuration.Width;
+
+            _cellControls = new CellControl[height, width];
+            for (var i = 0; i < height; ++i)
+            {
+                for (var j = 0; j < width; ++j)
+                {
+                    _cellControls[i, j] = new CellControl();
+                    _cellControls[i, j].SetParams(i, j, ProcessCellClick);
+                    FieldGrid.Children.Add(_cellControls[i, j]);
+                    Grid.SetRow(_cellControls[i, j], i);
+                    Grid.SetColumn(_cellControls[i, j], j);
+                }
+            }
+        }
+
+        private void SwitchPlayer()
+        {
+            _currentPlayer = _currentPlayer == _configuration.FirstPlayer
+                ? _configuration.SecondPlayer
+                : _configuration.FirstPlayer;
+        }
+
+        private bool IsHumansTurn() => _currentPlayer.Type == PlayerType.Human;
+
+        private void ProcessCellClick(int row, int column)
+        {
+            LogMessage(LogLevel.Trace, $"Cell ({row}, {column}) clicked");
+
+            lock (_stateLock)
+            {
+                if (!_waitingForTurn)
+                    return;
+                _waitingForTurn = false;
+            }
+
+            var human = _currentPlayer as HumanPlayer;
+            if (human == null)
+            {
+                LogMessage(LogLevel.Warning, "Wrong game state: processing click on bot turn");
+                return;
+            }
+
+            human.SetNextMove(new Cell(row, column));
         }
 
         private void ProcessGameEnded(object sender, GameEndedEventArgs gameEndedEventArgs)
@@ -61,6 +148,18 @@ namespace TicTacToeGame.WPF.UI.Windows
         {
             LogMessage(LogLevel.Debug, $"Game state changed, step {gameStateChangedEventArgs.CurrentState.Step}");
 
+            var lastMove = gameStateChangedEventArgs.CurrentState.LastMove;
+            var currentSign = gameStateChangedEventArgs.CurrentState.PlayerSign;
+            App.RunOnUiThread(() => _cellControls[lastMove.X, lastMove.Y].LoadPicture(currentSign));
+
+            SwitchPlayer();
+            if (IsHumansTurn())
+            {
+                lock (_stateLock)
+                {
+                    _waitingForTurn = true;
+                }
+            }
             _game.ReportStepProcessed();
             LogMessage(LogLevel.Debug, $"Step {gameStateChangedEventArgs.CurrentState.Step} processed");
         }

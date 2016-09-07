@@ -13,7 +13,7 @@
     <Window.Resources>
         <Style TargetType="Label">
             <Style.Setters>
-                <Setter Property="Margin" Value="10"></Setter>
+                <Setter Property="Margin" Value="5"></Setter>
             </Style.Setters>
         </Style>
     </Window.Resources>

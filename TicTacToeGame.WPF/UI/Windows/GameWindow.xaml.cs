@@ -41,6 +41,19 @@ namespace TicTacToeGame.WPF.UI.Windows
 
         private static string PlayerDescription(IPlayer player) => $"{player.Name} ({player.Type})";
 
+        private void Load()
+        {
+            var configLoaded = LoadConfiguration();
+            if (!configLoaded)
+            {
+                Helpers.ShowWarning("Configuration is not loaded");
+                return;
+            }
+            App.RunOnUiThread(() => WinnerLabel.Content = string.Empty);
+            LogMessage(LogLevel.Info, $"Loading game: {PlayerDescription(_configuration.FirstPlayer)} vs {PlayerDescription(_configuration.SecondPlayer)}");
+            LoadGame();
+        }
+
         private bool LoadConfiguration()
         {
             _configuration = new GameConfiguration();
@@ -78,6 +91,7 @@ namespace TicTacToeGame.WPF.UI.Windows
 
         private void ReloadGrid()
         {
+            FieldGrid.IsEnabled = true;
             FieldGrid.Children.Clear();
             FieldGrid.RowDefinitions.Clear();
             FieldGrid.ColumnDefinitions.Clear();
@@ -167,7 +181,13 @@ namespace TicTacToeGame.WPF.UI.Windows
                 });
             }
 
-            App.RunOnUiThread(() => WinnerLabel.Content = winnerMessage);
+            App.RunOnUiThread(() =>
+            {
+                WinnerLabel.Content = winnerMessage;
+                FieldGrid.IsEnabled = false;
+                if (MessageBox.Show(this, "Restart now?", "TicTacToe", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                   Load();
+            });
         }
 
         private void ProcessGameStateChanged(object sender, GameStateChangedEventArgs gameStateChangedEventArgs)
@@ -193,25 +213,15 @@ namespace TicTacToeGame.WPF.UI.Windows
                     _waitingForTurn = true;
                 }
             }
-            Thread.Sleep(200);
+            Thread.Sleep(50);
             _game.ReportStepProcessed();
             LogMessage(LogLevel.Debug, $"Step {gameStateChangedEventArgs.CurrentState.Step} processed");
         }
 
-        private void GameWindow_OnLoaded(object sender, RoutedEventArgs e)
-        {
-            var configLoaded = LoadConfiguration();
-            if (!configLoaded)
-            {
-                Helpers.ShowWarning("Configuration is not loaded");
-                return;
-            }
-
-            LogMessage(LogLevel.Info, $"Loading game: {PlayerDescription(_configuration.FirstPlayer)} vs {PlayerDescription(_configuration.SecondPlayer)}");
-            LoadGame();
-        }
+        private void GameWindow_OnLoaded(object sender, RoutedEventArgs e) => Load();
 
         private void GameWindow_OnClosing(object sender, CancelEventArgs e) => ((App)Application.Current).CloseLogWindow();
 
+        private void RestartButton_OnClick(object sender, RoutedEventArgs e) => Load();
     }
 }

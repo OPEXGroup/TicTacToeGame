@@ -267,27 +267,27 @@ namespace TicTacToeGame.Common
          */
         private List<Cell> RightDiagonalBuilt(Cell move)
         {
-            var deviationLowerBound = Math.Min(-Math.Min(move.X, VictoryLength - 1), Math.Min(-1, _width - move.Y - VictoryLength + 1)); // included
-            var deviationUpperBound = Math.Min(Math.Min(_height - move.X - VictoryLength + 1, 1), Math.Min(move.Y - 1, 1)); // excluded
-            Logger.LogEntry("DIAG", LogLevel.Info, $"{deviationLowerBound} {deviationUpperBound}");
+            //var deviationLowerBound = Math.Min(-Math.Min(move.X, VictoryLength - 1), Math.Min(-1, _width - move.Y - VictoryLength + 1)); // included
+            //var deviationUpperBound = Math.Min(Math.Min(_height - move.X - VictoryLength + 1, 1), Math.Min(move.Y - 1, 1)); // excluded
+            //Logger.LogEntry("DIAG", LogLevel.Info, $"{deviationLowerBound} {deviationUpperBound}");
 
-            var result = new List<Cell>();
-            for (var startDeviation = deviationLowerBound; startDeviation < deviationUpperBound; startDeviation++)
-            {
-                var foundVictory = true;
-                result.Clear();
-                for (var deviation = startDeviation; deviation < startDeviation + VictoryLength; ++deviation)
-                {
-                    result.Add(new Cell(move.X + deviation, move.Y - deviation));
-                    if (_field[move.X + deviation, move.Y - deviation] == _currentSign)
-                        continue;
-                    foundVictory = false;
-                    break;
-                }
+            //var result = new List<Cell>();
+            //for (var startDeviation = deviationLowerBound; startDeviation < deviationUpperBound; startDeviation++)
+            //{
+            //    var foundVictory = true;
+            //    result.Clear();
+            //    for (var deviation = startDeviation; deviation < startDeviation + VictoryLength; ++deviation)
+            //    {
+            //        result.Add(new Cell(move.X + deviation, move.Y - deviation));
+            //        if (_field[move.X + deviation, move.Y - deviation] == _currentSign)
+            //            continue;
+            //        foundVictory = false;
+            //        break;
+            //    }
 
-                if (foundVictory)
-                    return result;
-            }
+            //    if (foundVictory)
+            //        return result;
+            //}
             return null;
         }
 

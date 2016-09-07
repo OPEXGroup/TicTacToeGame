@@ -17,7 +17,7 @@ namespace TicTacToeGame.Common
         public const int VictoryLength = 5;
         public const int StepWaitInterval = 5;
 
-        public Game CreateNewGame(GameConfiguration configuration)
+        public static Game CreateNewGame(GameConfiguration configuration)
         {
             if (configuration == null || !configuration.IsValid())
                 return null;

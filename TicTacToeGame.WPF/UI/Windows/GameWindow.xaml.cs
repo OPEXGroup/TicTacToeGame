@@ -1,8 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using ITCC.Logging.Core;
 using TicTacToeGame.Common;
 using TicTacToeGame.Common.Interfaces;
+using TicTacToeGame.Common.Utils;
 
 namespace TicTacToeGame.WPF.UI.Windows
 {
@@ -12,6 +14,7 @@ namespace TicTacToeGame.WPF.UI.Windows
     public partial class GameWindow : Window
     {
         private GameConfiguration _configuration;
+        private Game _game;
 
         public GameWindow()
         {
@@ -31,7 +34,36 @@ namespace TicTacToeGame.WPF.UI.Windows
             return _configuration.IsValid();
         }
 
-        private bool LoadGame() => true;
+        private void LoadGame()
+        {
+            _game = Game.CreateNewGame(_configuration);
+            if (_game == null)
+            {
+                LogMessage(LogLevel.Warning, "Failed to create game");
+                return;
+            }
+
+            FirstPlayerNameLabel.Content = PlayerDescription(_configuration.FirstPlayer);
+            SecondPlayerNameLabel.Content = PlayerDescription(_configuration.SecondPlayer);
+
+            _game.GameStateChanged += ProcessGameStateChanged;
+            _game.GameEnded += ProcessGameEnded;
+            _game.Start();
+        }
+
+        private void ProcessGameEnded(object sender, GameEndedEventArgs gameEndedEventArgs)
+        {
+            var winnerMessage = gameEndedEventArgs.Winner == null ? "draw" : $"{gameEndedEventArgs.Winner.Name} won";
+            LogMessage(LogLevel.Debug, $"Game ended, {winnerMessage}");
+        }
+
+        private void ProcessGameStateChanged(object sender, GameStateChangedEventArgs gameStateChangedEventArgs)
+        {
+            LogMessage(LogLevel.Debug, $"Game state changed, step {gameStateChangedEventArgs.CurrentState.Step}");
+
+            _game.ReportStepProcessed();
+            LogMessage(LogLevel.Debug, $"Step {gameStateChangedEventArgs.CurrentState.Step} processed");
+        }
 
         private void GameWindow_OnLoaded(object sender, RoutedEventArgs e)
         {

@@ -17,25 +17,31 @@
             </Style.Setters>
         </Style>
     </Window.Resources>
-    
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*"></ColumnDefinition>
             <ColumnDefinition Width="1*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        
-        <Grid Name="FieldGrid"
-              Grid.Column="0"
-              Margin="10"></Grid>
-        
+
+        <Border BorderThickness="1"
+                Grid.Column="0"
+                BorderBrush="Black"
+                Margin="10">
+            <Grid Name="FieldGrid"
+                  Margin="10">
+                
+            </Grid>
+        </Border>
+
         <Grid Name="StatsGrid"
               Grid.Column="1">
-            <Grid.RowDefinitions> 
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" MinHeight="30"></RowDefinition>
+                <RowDefinition Height="Auto" MinHeight="30"></RowDefinition>
+                <RowDefinition Height="Auto" MinHeight="30"></RowDefinition>
             </Grid.RowDefinitions>
-            
+
             <Label Name="FirstPlayerNameLabel"
                    Grid.Row="0"
                    HorizontalAlignment="Stretch"
@@ -54,5 +60,6 @@
                    HorizontalAlignment="Stretch"
                    HorizontalContentAlignment="Center"></Label>
         </Grid>
+
     </Grid>
 </Window>

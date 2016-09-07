@@ -22,6 +22,10 @@ namespace TicTacToeGame.WPF.UI.Windows
         public GameConfiguration Configuration;
 
         private const string HumanPlayerName = "HUMAN";
+        private const string DefaultFirstPlayerName = "Player1";
+        private const string DefaultSecondPlayerName = "Player2";
+        private const int DefaultWidth = 20;
+        private const int DefaultHeight = 20;
 
         private readonly Dictionary<BotKind, string> _botKindToNameDict = new Dictionary<BotKind, string>(); 
         private List<string> _playerNameList;
@@ -59,6 +63,9 @@ namespace TicTacToeGame.WPF.UI.Windows
 
             validator.NonWhitespaceString(FirstPlayerNameTextBox.Text, "First player name is empty!");
             validator.NonWhitespaceString(SecondPlayerNameTextBox.Text, "Second player name is empty!");
+            validator.AddCondition(FirstPlayerNameTextBox.Text != SecondPlayerNameTextBox.Text,
+                "Players must have different names");
+
             validator.NonWhitespaceString(FieldWidthTextBox.Text, "Width is incorrect");
             validator.NonWhitespaceString(FieldHeightTextBox.Text, "Height is incorrect");
             int tmp;
@@ -82,6 +89,11 @@ namespace TicTacToeGame.WPF.UI.Windows
             SecondPlayerComboBox.ItemsSource = _playerNameList;
             FirstPlayerComboBox.SelectedItem = HumanPlayerName;
             SecondPlayerComboBox.SelectedItem = HumanPlayerName;
+
+            FirstPlayerNameTextBox.Text = DefaultFirstPlayerName;
+            SecondPlayerNameTextBox.Text = DefaultSecondPlayerName;
+            FieldWidthTextBox.Text = DefaultWidth.ToString();
+            FieldHeightTextBox.Text = DefaultHeight.ToString();
         }
 
         private void FirstPlayerComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -142,7 +154,7 @@ namespace TicTacToeGame.WPF.UI.Windows
             if (_firstPlayer is HumanPlayer)
                 _firstPlayer = new HumanPlayer(FirstPlayerNameTextBox.Text);
             if (_secondPlayer is HumanPlayer)
-                _secondPlayer = new HumanPlayer(FirstPlayerNameTextBox.Text);
+                _secondPlayer = new HumanPlayer(SecondPlayerNameTextBox.Text);
 
             Configuration.Width = _width;
             Configuration.Height = _height;

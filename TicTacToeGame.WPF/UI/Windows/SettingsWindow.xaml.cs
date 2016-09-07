@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using ITCC.UI.Utils;
 using TicTacToeGame.Common;
+using TicTacToeGame.Common.Enums;
 using TicTacToeGame.Common.Interfaces;
 using TicTacToeGame.Players;
 using TicTacToeGame.Players.Enums;
@@ -27,7 +28,7 @@ namespace TicTacToeGame.WPF.UI.Windows
         private const int DefaultWidth = 20;
         private const int DefaultHeight = 20;
 
-        private readonly Dictionary<BotKind, string> _botKindToNameDict = new Dictionary<BotKind, string>(); 
+        private readonly Dictionary<BotKind, string> _botKindToNameDict = new Dictionary<BotKind, string>();
         private List<string> _playerNameList;
         private string _firstPlayerString = HumanPlayerName;
         private string _secondPlayerString = HumanPlayerName;
@@ -63,8 +64,9 @@ namespace TicTacToeGame.WPF.UI.Windows
 
             validator.NonWhitespaceString(FirstPlayerNameTextBox.Text, "First player name is empty!");
             validator.NonWhitespaceString(SecondPlayerNameTextBox.Text, "Second player name is empty!");
-            validator.AddCondition(FirstPlayerNameTextBox.Text != SecondPlayerNameTextBox.Text,
-                "Players must have different names");
+            if (_firstPlayer.Type != PlayerType.Bot || _secondPlayer.Type != PlayerType.Bot)
+                validator.AddCondition(FirstPlayerNameTextBox.Text != SecondPlayerNameTextBox.Text,
+                    "Players must have different names");
 
             validator.NonWhitespaceString(FieldWidthTextBox.Text, "Width is incorrect");
             validator.NonWhitespaceString(FieldHeightTextBox.Text, "Height is incorrect");
@@ -74,7 +76,7 @@ namespace TicTacToeGame.WPF.UI.Windows
             validator.AddCondition(int.TryParse(FieldHeightTextBox.Text, out tmp), "Height is incorrect");
             validator.AddCondition(tmp >= Game.VictoryLength, "Height is incorrect");
 
-            if (! validator.ValidationPassed)
+            if (!validator.ValidationPassed)
                 Helpers.ShowWarning(validator.ErrorMessage);
 
             return validator.ValidationPassed;
@@ -84,7 +86,7 @@ namespace TicTacToeGame.WPF.UI.Windows
         {
             FillBotDict();
 
-            _playerNameList = new List<string>(_botKindToNameDict.Values) {HumanPlayerName};
+            _playerNameList = new List<string>(_botKindToNameDict.Values) { HumanPlayerName };
             FirstPlayerComboBox.ItemsSource = _playerNameList;
             SecondPlayerComboBox.ItemsSource = _playerNameList;
             FirstPlayerComboBox.SelectedItem = HumanPlayerName;
@@ -101,7 +103,7 @@ namespace TicTacToeGame.WPF.UI.Windows
             if (FirstPlayerComboBox.SelectedItem == null)
                 return;
 
-            _firstPlayerString = (string) FirstPlayerComboBox.SelectedItem;
+            _firstPlayerString = (string)FirstPlayerComboBox.SelectedItem;
             if (_firstPlayerString != HumanPlayerName)
             {
                 var botKind = _botKindToNameDict.First(kv => kv.Value == _firstPlayerString).Key;

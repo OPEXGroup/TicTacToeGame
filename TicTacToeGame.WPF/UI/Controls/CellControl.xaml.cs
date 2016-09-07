@@ -30,7 +30,7 @@ namespace TicTacToeGame.WPF.UI.Controls
 
         public void LoadPicture(CellSign sign)
         {
-            var path = sign == CellSign.O ? "Assets\\O.png" : "Assets\\X.png";
+            var path = sign == CellSign.O ? "Assets/O.png" : "Assets/X.png";
             SignImage.BeginInit();
             SignImage.Source = new BitmapImage(new Uri(path, UriKind.Relative));
             SignImage.EndInit();

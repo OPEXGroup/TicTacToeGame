@@ -40,6 +40,11 @@
                 <RowDefinition Height="Auto" MinHeight="30"></RowDefinition>
                 <RowDefinition Height="Auto" MinHeight="30"></RowDefinition>
                 <RowDefinition Height="Auto" MinHeight="30"></RowDefinition>
+                <RowDefinition Height="Auto" MinHeight="30"></RowDefinition>
+                <RowDefinition Height="Auto" MinHeight="30"></RowDefinition>
+                <RowDefinition Height="Auto" MinHeight="30"></RowDefinition>
+                <RowDefinition Height="*" MinHeight="30"></RowDefinition>
+                <RowDefinition Height="Auto" MinHeight="30"></RowDefinition>
             </Grid.RowDefinitions>
 
             <Label Name="FirstPlayerNameLabel"
@@ -59,6 +64,19 @@
                    Grid.Row="2"
                    HorizontalAlignment="Stretch"
                    HorizontalContentAlignment="Center"></Label>
+            
+            <Label Name="WinnerLabel"
+                   Grid.Row="4"
+                   HorizontalAlignment="Stretch"
+                   HorizontalContentAlignment="Center"
+                   FontSize="18"
+                   Foreground="Green"
+                   FontWeight="Bold"></Label>
+            <Button Name="TestButton"
+                    Grid.Row="5"
+                    Content="Click"
+                    Margin="5"
+                    Click="TestButton_OnClick"></Button>
         </Grid>
 
     </Grid>

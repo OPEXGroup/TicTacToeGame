@@ -139,8 +139,9 @@ namespace TicTacToeGame.WPF.UI.Windows
 
         private void ProcessGameEnded(object sender, GameEndedEventArgs gameEndedEventArgs)
         {
-            var winnerMessage = gameEndedEventArgs.Winner == null ? "draw" : $"{gameEndedEventArgs.Winner.Name} won";
+            var winnerMessage = gameEndedEventArgs.Winner == null ? "Draw" : $"{gameEndedEventArgs.Winner.Name} won";
             LogMessage(LogLevel.Debug, $"Game ended, {winnerMessage}");
+            App.RunOnUiThread(() => WinnerLabel.Content = winnerMessage);
         }
 
         private void ProcessGameStateChanged(object sender, GameStateChangedEventArgs gameStateChangedEventArgs)
@@ -177,5 +178,10 @@ namespace TicTacToeGame.WPF.UI.Windows
         }
 
         private void GameWindow_OnClosing(object sender, CancelEventArgs e) => ((App)Application.Current).CloseLogWindow();
+
+        private void TestButton_OnClick(object o, RoutedEventArgs e)
+        {
+            LogMessage(LogLevel.Trace, "kasd;lkas;ldkas;dkas;ldka;lsdka;sldk");
+        }
     }
 }

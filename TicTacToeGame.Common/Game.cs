@@ -15,7 +15,7 @@ namespace TicTacToeGame.Common
         #region public
 
         public const int VictoryLength = 5;
-        public const int StepWaitInterval = 5;
+        public const int StepWaitInterval = 50;
 
         public static Game CreateNewGame(GameConfiguration configuration)
         {
@@ -182,11 +182,13 @@ namespace TicTacToeGame.Common
                 return _currentPlayer.GetNextMove(BuildFieldState());
 
             var moveTask = Task.Run(() => _currentPlayer.GetNextMove(BuildFieldState()));
-            Thread.Sleep(_botTurnLength);
-            if (!moveTask.IsCompleted)
-                return null;
+            var waitTask = Task.Delay(_botTurnLength);
 
-            return moveTask.Result;
+            var completedTask = Task.WhenAny(moveTask, waitTask).Result;
+
+            if (completedTask == moveTask)
+                return moveTask.Result;
+            return null;
         }
 
         private Cell GetLastMove() => _history.LastOrDefault();

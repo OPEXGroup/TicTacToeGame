@@ -80,10 +80,17 @@ namespace TicTacToeGame.Common
                 if (move == null)
                 {
                     if (_currentPlayer.Type == PlayerType.Bot)
-                        LogMessage(LogLevel.Info, $"Move by {_currentPlayer.Name} took longer than {_botTurnLength}ms, {NotCurrentPlayer.Name} won");
+                    {
+                        LogMessage(LogLevel.Info,
+                            $"Move by {_currentPlayer.Name} took longer than {_botTurnLength}ms, {NotCurrentPlayer.Name} won");
+                        ReportMoveTimeout();
+                    }
                     else
+                    {
                         LogMessage(LogLevel.Info, $"{_currentPlayer.Name} tried to submit null move");
-                    ReportCurrentMoveInvalid();
+                        ReportCurrentMoveInvalid();
+                    }
+                        
                     return;
                 }
 

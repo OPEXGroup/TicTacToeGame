@@ -15,7 +15,7 @@ namespace TicTacToeGame.Common
         #region public
 
         public const int VictoryLength = 5;
-        public const int StepWaitInterval = 50;
+        public const int StepWaitInterval = 2;
 
         public static Game CreateNewGame(GameConfiguration configuration)
         {
@@ -190,14 +190,20 @@ namespace TicTacToeGame.Common
             if (_currentPlayer.Type == PlayerType.Human)
                 return _currentPlayer.GetNextMove(BuildFieldState());
 
-            var moveTask = Task.Run(() => _currentPlayer.GetNextMove(BuildFieldState()));
-            var waitTask = Task.Delay(_botTurnLength);
+            try
+            {
+                var moveTask = Task.Run(() => _currentPlayer.GetNextMove(BuildFieldState()));
+                var waitTask = Task.Delay(_botTurnLength);
 
-            var completedTask = Task.WhenAny(moveTask, waitTask).Result;
+                var completedTask = Task.WhenAny(moveTask, waitTask).Result;
 
-            if (completedTask == moveTask)
-                return moveTask.Result;
-            return null;
+                return completedTask == moveTask ? moveTask.Result : null;
+            }
+            catch (Exception ex)
+            {
+                LogMessage(LogLevel.Debug, $"Bot {_currentPlayer.Name} failed turn with {ex.GetType().Name}");
+                return null;
+            }
         }
 
         private Cell GetLastMove() => _history.LastOrDefault();

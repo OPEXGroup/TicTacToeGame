@@ -44,6 +44,7 @@
     <Compile Include="BotFactory.cs" />
     <Compile Include="BotPlayer.cs" />
     <Compile Include="Bots\BrainTvs\BrainTvsBot.cs" />
+    <Compile Include="Bots\BrainTvs\FlowDirection.cs" />
     <Compile Include="Bots\Nibbler\NibblerBot.cs" />
     <Compile Include="Bots\Trivial\TrivialBot.cs" />
     <Compile Include="Enums\BotKind.cs" />

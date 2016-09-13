@@ -16,6 +16,7 @@ namespace TicTacToeGame.Common
 
         public const int VictoryLength = 5;
         public const int StepWaitInterval = 2;
+        public const string LogScope = @"TICTACTOE";
 
         public static Game CreateNewGame(GameConfiguration configuration)
         {
@@ -24,6 +25,8 @@ namespace TicTacToeGame.Common
 
             return new Game(configuration);
         }
+
+        public static void Mute() => Logger.AddBannedScope(LogScope);
 
         public void Start()
         {
@@ -47,7 +50,7 @@ namespace TicTacToeGame.Common
             }
         }
 
-        public void WaitGameCompleted() => _gameThread.Join();
+        public void WaitCompleted() => _gameThread.Join();
 
         public event EventHandler<GameStateChangedEventArgs> GameStateChanged;
         public event EventHandler<GameEndedEventArgs> GameEnded; 
@@ -282,7 +285,6 @@ namespace TicTacToeGame.Common
         {
             var deviationLowerBound = Math.Max(-Math.Min(move.X, VictoryLength - 1), Math.Max(1 - VictoryLength, move.Y - _width + 1)); // included
             var deviationUpperBound = Math.Min(Math.Min(_height - move.X - VictoryLength + 1, 1), Math.Min(move.Y - VictoryLength + 2, 1)); // excluded
-            Logger.LogEntry("DIAG", LogLevel.Debug, $"{deviationLowerBound} {deviationUpperBound}");
 
             var result = new List<Cell>();
             for (var startDeviation = deviationLowerBound; startDeviation < deviationUpperBound; startDeviation++)
@@ -291,7 +293,6 @@ namespace TicTacToeGame.Common
                 result.Clear();
                 for (var deviation = startDeviation; deviation < startDeviation + VictoryLength; ++deviation)
                 {
-                    Logger.LogEntry("DIAG", LogLevel.Trace, $"{deviation} {move.X + deviation} {move.Y - deviation}");
                     result.Add(new Cell(move.X + deviation, move.Y - deviation));
                     if (_field[move.X + deviation, move.Y - deviation] == _currentSign)
                         continue;
@@ -384,7 +385,7 @@ namespace TicTacToeGame.Common
 
         private void OnGameEnded(GameEndedEventArgs e) => GameEnded?.Invoke(this, e);
 
-        private static void LogMessage(LogLevel level, string message) => Logger.LogEntry("TICTACTOE", level, message);
+        private static void LogMessage(LogLevel level, string message) => Logger.LogEntry(LogScope, level, message);
 
         private readonly int _width;
         private readonly int _height;

@@ -1,5 +1,4 @@
-﻿using TicTacToeGame.Players;
-using TicTacToeGame.Players.Enums;
+﻿using TicTacToeGame.Players.Enums;
 
 namespace TicTacToeGame.BotCompetition.Utils
 {

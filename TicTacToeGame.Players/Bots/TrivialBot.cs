@@ -9,17 +9,22 @@ namespace TicTacToeGame.Players.Bots
     /// </summary>
     public class TrivialBot : BotPlayer
     {
+        #region IPlayer
         public override string Name => "Trivial bot";
         public override Cell GetNextMove(FieldState fieldState)
         {
             while (true)
             {
-                var random = new Random();
-                var x = random.Next(fieldState.Height);
-                var y = random.Next(fieldState.Width);
+                var x = _random.Next(fieldState.Height);
+                var y = _random.Next(fieldState.Width);
                 if (fieldState.Field[x, y] == CellSign.Empty)
                     return new Cell(x, y);
             }
         }
+        #endregion
+
+        #region private
+        private readonly Random _random = new Random();
+        #endregion
     }
 }

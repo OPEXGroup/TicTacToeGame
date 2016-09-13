@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TicTacToeGame.Players;
 using TicTacToeGame.Players.Enums;
 
 namespace TicTacToeGame.BotCompetition.Utils
@@ -14,14 +11,17 @@ namespace TicTacToeGame.BotCompetition.Utils
 
         public static IEnumerable<BotPair> GetAllBotPairs()
         {
-            var botTypes = Enum.GetValues(typeof(BotKind)).Cast<BotKind>().ToList();
-            var innerBotTypes = new List<BotKind>(botTypes);
+            var botTypes = GetAllBotKinds();
+            var innerBotTypes = GetAllBotKinds();
             foreach (var botType in botTypes)
             {
-                foreach (var innerBotType in innerBotTypes)
+                /**
+                 * We should have:
+                 * 1) Only one of (a, b) and (b, a) pairs
+                 * 2) Only pairs (a, b) with a != b
+                 */
+                foreach (var innerBotType in innerBotTypes.Where(innerBotType => botType < innerBotType))
                 {
-                    if (botType == innerBotType)
-                        continue;
                     yield return new BotPair
                     {
                         FirstPlayer = botType,
@@ -30,6 +30,8 @@ namespace TicTacToeGame.BotCompetition.Utils
                 }
             }
         }
+
+        public static List<BotKind> GetAllBotKinds() => Enum.GetValues(typeof(BotKind)).Cast<BotKind>().ToList();
 
         #endregion
     }

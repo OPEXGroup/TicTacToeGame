@@ -3,6 +3,7 @@
     public enum BotKind
     {
         Trivial,
-        Nibbler
+        Nibbler,
+        BrainTvs
     }
 }

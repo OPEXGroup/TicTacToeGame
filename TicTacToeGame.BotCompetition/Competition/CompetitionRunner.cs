@@ -129,13 +129,8 @@ namespace TicTacToeGame.BotCompetition.Competition
                     return CellSign.Empty;
                 }
 
-                GameEndedEventArgs args = null;
-                game.GameStateChanged += (sender, eventArgs) => game.ReportStepProcessed();
-                game.GameEnded += (sender, eventArgs) => args = eventArgs;
-                game.Start();
-                game.WaitCompleted();
-
-                return GameStateToSign(args.State);
+                var gameEndedEventArgs = game.RunSilently();
+                return GameStateToSign(gameEndedEventArgs.State);
             }
             catch (Exception ex)
             {

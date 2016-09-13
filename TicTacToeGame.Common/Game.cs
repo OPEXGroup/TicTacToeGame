@@ -42,6 +42,16 @@ namespace TicTacToeGame.Common
             _gameThread.Start();
         }
 
+        public GameEndedEventArgs RunSilently()
+        {
+            GameEndedEventArgs result = null;
+            GameStateChanged = (sender, args) => ReportStepProcessed();
+            GameEnded += (sender, args) => result = args;
+            Start();
+            WaitCompleted();
+            return result;
+        }
+
         public void ReportStepProcessed()
         {
             lock (_stepLock)

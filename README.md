@@ -1,0 +1,1 @@
+Please see CONTRIBUTING.md for bot pull requests notes

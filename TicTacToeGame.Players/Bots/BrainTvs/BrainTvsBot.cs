@@ -36,7 +36,7 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
             _cellGroupManager = new CellGroupManager(initialState);
         }
 
-        private Cell GetInitialMove() => new Cell(_height / 2, _width / 2);
+        private Cell GetInitialMove() => new Cell(_random.Next(_height), _random.Next(_width));
 
         private readonly Random _random = new Random();
 

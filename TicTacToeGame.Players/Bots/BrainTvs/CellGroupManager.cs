@@ -53,6 +53,48 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
             if (_opponentTetrads.Any())
                 return _opponentTetrads.First().GetPossibleMove();
 
+            return GetRandomMove();
+        }
+
+        private Cell GetRandomMove()
+        {
+            foreach (var ourCell in _ourCells)
+            {
+                var emptyCell = GetEmptyNeightbor(ourCell);
+                if (emptyCell != null)
+                    return emptyCell;
+            }
+
+            foreach (var ourCell in _opponentCells)
+            {
+                var emptyCell = GetEmptyNeightbor(ourCell);
+                if (emptyCell != null)
+                    return emptyCell;
+            }
+
+            // Unreacheable
+            return new Cell(0, 0);
+        }
+
+        private Cell GetEmptyNeightbor(Cell cell)
+        {
+            for (var dx = -1; dx < 2; ++dx)
+            {
+                for (var dy = -1; dy < 2; dy++)
+                {
+                    if (dx == 0 && dy == 0)
+                        continue;
+                    var x = cell.X + dx;
+                    var y = cell.Y + dy;
+
+                    if (x < 0 || y < 0 || x >= _height || y >= _width)
+                        continue;
+
+                    if (_currentField[x, y] == CellSign.Empty)
+                        return new Cell(x,y);
+                }
+            }
+
             return null;
         }
 
@@ -61,8 +103,8 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
             
         }
 
-        private int _width;
-        private int _height;
+        private readonly int _width;
+        private readonly int _height;
         private CellSign _ourSign;
         private CellSign[,] _currentField;
 

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using TicTacToeGame.Common.Enums;
 using TicTacToeGame.Common.Utils;
 
 namespace TicTacToeGame.Players.Bots.BrainTvs
@@ -22,9 +20,9 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
                 return GetInitialMove();
             }
 
-            SaveCurrentState(fieldState);
+            _cellGroupManager.Fill(fieldState.Field, fieldState.LastMove);
 
-            return ComputeNextMove();
+            return _cellGroupManager.GetNextMove();
         }
 
         public override string Author => "Vladimir Tyrin";
@@ -35,31 +33,18 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
         {
             _width = initialState.Width;
             _height = initialState.Height;
-            _ourSign = initialState.PlayerSign;
+            _cellGroupManager = new CellGroupManager(initialState);
         }
 
         private Cell GetInitialMove() => new Cell(_height / 2, _width / 2);
-
-        private void SaveCurrentState(FieldState currentState)
-        {
-            _opponentMoveList.Add(currentState.LastMove);
-            _currentField = currentState.Field;
-        }
-
-        private Cell ComputeNextMove()
-        {
-            return null;
-        }
 
         private readonly Random _random = new Random();
 
         private bool _justStarted = true;
 
+        private CellGroupManager _cellGroupManager;
         private int _width;
         private int _height;
-        private CellSign _ourSign;
-        private CellSign[,] _currentField;
-        private readonly List<Cell> _opponentMoveList = new List<Cell>();
 
         #endregion
     }

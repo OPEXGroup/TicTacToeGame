@@ -15,7 +15,8 @@ namespace TicTacToeGame.Common
         #region public
 
         public const int VictoryLength = 5;
-        public const int StepWaitInterval = 50;
+        public const int StepWaitInterval = 2;
+        public const string LogScope = @"TICTACTOE";
 
         public static Game CreateNewGame(GameConfiguration configuration)
         {
@@ -24,6 +25,8 @@ namespace TicTacToeGame.Common
 
             return new Game(configuration);
         }
+
+        public static void Mute() => Logger.AddBannedScope(LogScope);
 
         public void Start()
         {
@@ -47,7 +50,7 @@ namespace TicTacToeGame.Common
             }
         }
 
-        public void WaitGameCompleted() => _gameThread.Join();
+        public void WaitCompleted() => _gameThread.Join();
 
         public event EventHandler<GameStateChangedEventArgs> GameStateChanged;
         public event EventHandler<GameEndedEventArgs> GameEnded; 
@@ -190,14 +193,20 @@ namespace TicTacToeGame.Common
             if (_currentPlayer.Type == PlayerType.Human)
                 return _currentPlayer.GetNextMove(BuildFieldState());
 
-            var moveTask = Task.Run(() => _currentPlayer.GetNextMove(BuildFieldState()));
-            var waitTask = Task.Delay(_botTurnLength);
+            try
+            {
+                var moveTask = Task.Run(() => _currentPlayer.GetNextMove(BuildFieldState()));
+                var waitTask = Task.Delay(_botTurnLength);
 
-            var completedTask = Task.WhenAny(moveTask, waitTask).Result;
+                var completedTask = Task.WhenAny(moveTask, waitTask).Result;
 
-            if (completedTask == moveTask)
-                return moveTask.Result;
-            return null;
+                return completedTask == moveTask ? moveTask.Result : null;
+            }
+            catch (Exception ex)
+            {
+                LogMessage(LogLevel.Debug, $"Bot {_currentPlayer.Name} failed turn with {ex.GetType().Name}");
+                return null;
+            }
         }
 
         private Cell GetLastMove() => _history.LastOrDefault();
@@ -276,7 +285,6 @@ namespace TicTacToeGame.Common
         {
             var deviationLowerBound = Math.Max(-Math.Min(move.X, VictoryLength - 1), Math.Max(1 - VictoryLength, move.Y - _width + 1)); // included
             var deviationUpperBound = Math.Min(Math.Min(_height - move.X - VictoryLength + 1, 1), Math.Min(move.Y - VictoryLength + 2, 1)); // excluded
-            Logger.LogEntry("DIAG", LogLevel.Debug, $"{deviationLowerBound} {deviationUpperBound}");
 
             var result = new List<Cell>();
             for (var startDeviation = deviationLowerBound; startDeviation < deviationUpperBound; startDeviation++)
@@ -285,7 +293,6 @@ namespace TicTacToeGame.Common
                 result.Clear();
                 for (var deviation = startDeviation; deviation < startDeviation + VictoryLength; ++deviation)
                 {
-                    Logger.LogEntry("DIAG", LogLevel.Trace, $"{deviation} {move.X + deviation} {move.Y - deviation}");
                     result.Add(new Cell(move.X + deviation, move.Y - deviation));
                     if (_field[move.X + deviation, move.Y - deviation] == _currentSign)
                         continue;
@@ -378,7 +385,7 @@ namespace TicTacToeGame.Common
 
         private void OnGameEnded(GameEndedEventArgs e) => GameEnded?.Invoke(this, e);
 
-        private static void LogMessage(LogLevel level, string message) => Logger.LogEntry("TICTACTOE", level, message);
+        private static void LogMessage(LogLevel level, string message) => Logger.LogEntry(LogScope, level, message);
 
         private readonly int _width;
         private readonly int _height;

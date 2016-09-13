@@ -8,7 +8,7 @@ namespace TicTacToeGame.BotCompetition
 {
     internal class Program
     {
-        private const int PairCompetitionCount = 10000;
+        private const int PairCompetitionCount = 1000;
         private const int FieldWidth = 30;
         private const int FieldHeight = 30;
         private const int BotTurnLength = 1000;
@@ -19,13 +19,18 @@ namespace TicTacToeGame.BotCompetition
             Logger.RegisterReceiver(new ColouredConsoleLogger());
             Game.Mute();
 
+            var score = new GlobalScore();
+
             foreach (var botPair in BotPairBuilder.GetAllBotPairs())
             {
+                var firstBotKind = botPair.FirstPlayer;
+                var secondBotKind = botPair.SecondPlayer;
+
                 var competitionConfiguration = new CompetitionConfiguration
                 {
                     BotTurnLength = BotTurnLength,
-                    FirstBotKind = botPair.FirstPlayer,
-                    SecondBotKind = botPair.SecondPlayer,
+                    FirstBotKind = firstBotKind,
+                    SecondBotKind = secondBotKind,
                     Height = FieldHeight,
                     Width = FieldWidth,
                     RunCount = PairCompetitionCount
@@ -38,9 +43,13 @@ namespace TicTacToeGame.BotCompetition
                     continue;
                 }
 
-                var result = competitionRunner.Run();
-                Logger.LogEntry("COMPETITION", LogLevel.Info, result.ToString());
+                var competitionResult = competitionRunner.Run();
+                score.Add(botPair, competitionResult);
+                Logger.LogEntry("COMPETITION", LogLevel.Info, competitionResult.ToString());
             }
+
+            score.Done();
+            score.Print();
         }
     }
 }

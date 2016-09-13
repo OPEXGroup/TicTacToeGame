@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using TicTacToeGame.Common;
 using TicTacToeGame.Common.Enums;
 using TicTacToeGame.Common.Utils;
 
@@ -103,6 +105,211 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
             
         }
 
+        private List<Cell> GetGroupByDirection(Cell cell, FlowDirection direction)
+        {
+            var x = cell.X;
+            var y = cell.Y;
+            var yIsSmall = y < Game.VictoryLength - 1;
+            var xIsSmall = x < Game.VictoryLength - 1;
+            var xIsBig = x > _height - Game.VictoryLength;
+            var yIsBig = y > _width - Game.VictoryLength;
+
+            switch (direction)
+            {
+                case FlowDirection.RightToLeft:
+                    if (yIsSmall)
+                        return null;
+                    return new List<Cell>
+                    {
+                        new Cell(x, y),
+                        new Cell(x, y - 1),
+                        new Cell(x, y - 2),
+                        new Cell(x, y - 3),
+                        new Cell(x, y - 4),
+                    };
+                case FlowDirection.LeftToRight:
+                    if (yIsBig)
+                        return null;
+                    return new List<Cell>
+                    {
+                        new Cell(x, y),
+                        new Cell(x, y + 1),
+                        new Cell(x, y + 2),
+                        new Cell(x, y + 3),
+                        new Cell(x, y + 4),
+                    };
+                case FlowDirection.TopToBottom:
+                    if (xIsBig)
+                        return null;
+                    return new List<Cell>
+                    {
+                        new Cell(x, y),
+                        new Cell(x + 1, y),
+                        new Cell(x + 2, y),
+                        new Cell(x + 3, y),
+                        new Cell(x + 4, y),
+                    };
+                case FlowDirection.BottomToTop:
+                    if (xIsSmall)
+                        return null;
+                    return new List<Cell>
+                    {
+                        new Cell(x, y),
+                        new Cell(x - 1, y),
+                        new Cell(x - 2, y),
+                        new Cell(x - 3, y),
+                        new Cell(x - 4, y),
+                    };
+                case FlowDirection.DiagonalDownRight:
+                    if (xIsBig || yIsBig)
+                        return null;
+                    return new List<Cell>
+                    {
+                        new Cell(x, y),
+                        new Cell(x + 1, y + 1),
+                        new Cell(x + 2, y + 2),
+                        new Cell(x + 3, y + 3),
+                        new Cell(x + 4, y + 4),
+                    };
+                case FlowDirection.DiagonalDownLeft:
+                    if (xIsSmall || yIsBig)
+                        return null;
+                    return new List<Cell>
+                    {
+                        new Cell(x, y),
+                        new Cell(x - 1, y + 1),
+                        new Cell(x - 2, y + 2),
+                        new Cell(x - 3, y + 3),
+                        new Cell(x - 4, y + 4),
+                    };
+                case FlowDirection.DiagonalUpRight:
+                    if (xIsBig || yIsSmall)
+                        return null;
+                    return new List<Cell>
+                    {
+                        new Cell(x, y),
+                        new Cell(x + 1, y - 1),
+                        new Cell(x + 2, y - 2),
+                        new Cell(x + 3, y - 3),
+                        new Cell(x + 4, y - 4),
+                    };
+                case FlowDirection.DiagonalUpLeft:
+                    if (xIsSmall || yIsSmall)
+                        return null;
+                    return new List<Cell>
+                    {
+                        new Cell(x, y),
+                        new Cell(x - 1, y - 1),
+                        new Cell(x - 2, y - 2),
+                        new Cell(x - 3, y - 3),
+                        new Cell(x - 4, y - 4),
+                    };
+                default:
+                    return null;
+            }
+        }
+
+        private FlowDirection OppositeDirection(FlowDirection direction)
+        {
+            switch (direction)
+            {
+                case FlowDirection.RightToLeft:
+                    return FlowDirection.LeftToRight;
+                case FlowDirection.LeftToRight:
+                    return FlowDirection.RightToLeft;
+                case FlowDirection.TopToBottom:
+                    return FlowDirection.BottomToTop;
+                case FlowDirection.BottomToTop:
+                    return FlowDirection.TopToBottom;
+                case FlowDirection.DiagonalDownRight:
+                    return FlowDirection.DiagonalUpLeft;
+                case FlowDirection.DiagonalDownLeft:
+                    return FlowDirection.DiagonalUpRight;
+                case FlowDirection.DiagonalUpRight:
+                    return FlowDirection.DiagonalDownLeft;
+                case FlowDirection.DiagonalUpLeft:
+                    return FlowDirection.DiagonalDownRight;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
+            }
+        }
+
+        // We assume distance > 0
+        private Cell GetCellByDistanceAndDirection(Cell cell, int distance, FlowDirection direction)
+        {
+            var x = cell.X;
+            var y = cell.Y;
+            var yIsSmall = y < distance;
+            var xIsSmall = x < distance;
+            var xIsBig = x > _height - distance - 1;
+            var yIsBig = y > _width - distance - 1;
+
+            int dx;
+            int dy;
+
+            switch (direction)
+            {
+                case FlowDirection.RightToLeft:
+                    if (yIsSmall)
+                        return null;
+                    dx = 0;
+                    dy = -distance;
+                    break;
+                case FlowDirection.LeftToRight:
+                    if (yIsBig)
+                        return null;
+                    dx = 0;
+                    dy = distance;
+                    break;
+                case FlowDirection.TopToBottom:
+                    if (xIsBig)
+                        return null;
+                    dx = distance;
+                    dy = 0;
+                    break;
+                case FlowDirection.BottomToTop:
+                    if (xIsSmall)
+                        return null;
+                    dx = -distance;
+                    dy = 0;
+                    break;
+                case FlowDirection.DiagonalDownRight:
+                    if (xIsBig || yIsBig)
+                        return null;
+                    dx = distance;
+                    dy = distance;
+                    break;
+                case FlowDirection.DiagonalDownLeft:
+                    if (xIsSmall || yIsBig)
+                        return null;
+                    dx = -distance;
+                    dy = distance;
+                    break;
+                case FlowDirection.DiagonalUpRight:
+                    if (xIsBig || yIsSmall)
+                        return null;
+                    dx = distance;
+                    dy = -distance;
+                    break;
+                case FlowDirection.DiagonalUpLeft:
+                    if (xIsSmall || yIsSmall)
+                        return null;
+                    dx = -distance;
+                    dy = -distance;
+                    break;
+                default:
+                    return null;
+            }
+
+            return new Cell(x + dx, y + dy);
+        }
+
+        private Cell GetPreGroupCell(Cell cell, FlowDirection direction)
+            => GetCellByDistanceAndDirection(cell, 1, OppositeDirection(direction));
+
+        private Cell GetPostGroupCell(Cell cell, FlowDirection direction)
+            => GetCellByDistanceAndDirection(cell, Game.VictoryLength, direction);
+
         private readonly int _width;
         private readonly int _height;
         private CellSign _ourSign;
@@ -118,6 +325,8 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
         private readonly List<CellGroup> _opponentDyads = new List<CellGroup>();
         private readonly List<CellGroup> _opponentTriads = new List<CellGroup>();
         private readonly List<CellGroup> _opponentTetrads = new List<CellGroup>();
+
+        private static readonly List<FlowDirection> AllDirections = Enum.GetValues(typeof(FlowDirection)).Cast<FlowDirection>().ToList();
 
         #endregion
     }

@@ -5,6 +5,7 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
 {
     internal class CellGroup
     {
+        public int QuantityType { get; set; }
         public Cell[] OpponentCells { get; set; }
         public Cell[] OurCells { get; set; }
         public Cell[] FreeCells { get; set; }

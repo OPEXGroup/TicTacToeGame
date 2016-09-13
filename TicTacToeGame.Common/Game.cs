@@ -46,7 +46,7 @@ namespace TicTacToeGame.Common
         {
             GameEndedEventArgs result = null;
             GameStateChanged = (sender, args) => ReportStepProcessed();
-            GameEnded += (sender, args) => result = args;
+            GameEnded = (sender, args) => result = args;
             Start();
             WaitCompleted();
             return result;

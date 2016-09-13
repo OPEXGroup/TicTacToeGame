@@ -2,7 +2,7 @@
 using TicTacToeGame.Common.Enums;
 using TicTacToeGame.Common.Utils;
 
-namespace TicTacToeGame.Players.Bots
+namespace TicTacToeGame.Players.Bots.Trivial
 {
     /// <summary>
     ///     Next move is a random empty cell

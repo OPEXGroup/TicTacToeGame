@@ -1,9 +1,9 @@
 ﻿using System;
 using TicTacToeGame.Common.Utils;
 
-namespace TicTacToeGame.Players.Bots
+namespace TicTacToeGame.Players.Bots.Nibbler
 {
-    class NibblerBot : BotPlayer
+    public class NibblerBot : BotPlayer
     {
         public override string Name => "Nibbler Bot";
         public override Cell GetNextMove(FieldState fieldState)

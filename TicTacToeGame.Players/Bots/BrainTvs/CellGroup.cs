@@ -12,5 +12,6 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
         public FlowDirection FlowDirection { get; set; }
 
         public Cell GetPossibleMove() => FreeCells.First();
+        public string CellsDisplay() => string.Join(" ", Cells.Select(c => $"({c.X}, {c.Y})"));
     }
 }

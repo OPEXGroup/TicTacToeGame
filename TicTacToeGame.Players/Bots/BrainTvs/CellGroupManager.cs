@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ITCC.Logging.Core;
 using TicTacToeGame.Common;
 using TicTacToeGame.Common.Enums;
 using TicTacToeGame.Common.Utils;
@@ -30,6 +31,7 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
         public Cell GetNextMove()
         {
             var cell = InnerGetNextMove();
+            LogMessage(LogLevel.Trace, $"Selecting move ({cell.X} {cell.Y})");
             _ourCells.Add(cell);
             return cell;
         }
@@ -51,18 +53,33 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
         private Cell InnerGetNextMove()
         {
             if (_ourTetrads.Any())
-                return _ourTetrads.First().GetPossibleMove();
+            {
+                var tetrade = _ourTetrads.First();
+                LogMessage(LogLevel.Trace, $"Found our tetrade {tetrade.CellsDisplay()}");
+                return tetrade.GetPossibleMove();
+            }
+                
             if (_opponentTetrads.Any())
-                return _opponentTetrads.First().GetPossibleMove();
+            {
+                var tetrade = _opponentTetrads.First();
+                LogMessage(LogLevel.Trace, $"Found opponent tetrade {tetrade.CellsDisplay()}");
+                return tetrade.GetPossibleMove();
+            }
 
             var opponentOpenTriade = _opponentTriads.FirstOrDefault(g => g.Open);
             var ourOpenTriade = _ourTriads.FirstOrDefault(g => g.Open);
 
             if (ourOpenTriade != null)
+            {
+                LogMessage(LogLevel.Trace, $"Found our open tetrade {ourOpenTriade.CellsDisplay()}");
                 return ourOpenTriade.GetPossibleMove();
+            }
 
             if (opponentOpenTriade != null)
+            {
+                LogMessage(LogLevel.Trace, $"Found opponent open triade {opponentOpenTriade.CellsDisplay()}");
                 return opponentOpenTriade.GetPossibleMove();
+            }
 
             var ourGroup = _ourTriads.FirstOrDefault() 
                 ?? _ourDyads.FirstOrDefault(g => g.Open)
@@ -140,7 +157,7 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
                     if (cellGroup != null)
                     {
                         cellGroup.FlowDirection = flowDirection;
-                        _opponentTetrads.Add(cellGroup);
+                        _opponentTriads.Add(cellGroup);
                         continue;
                     }
 
@@ -148,7 +165,7 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
                     if (cellGroup != null)
                     {
                         cellGroup.FlowDirection = flowDirection;
-                        _opponentTetrads.Add(cellGroup);
+                        _opponentDyads.Add(cellGroup);
                     }
                 }
             }
@@ -175,7 +192,7 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
                     if (cellGroup != null)
                     {
                         cellGroup.FlowDirection = flowDirection;
-                        _ourTetrads.Add(cellGroup);
+                        _ourTriads.Add(cellGroup);
                         continue;
                     }
 
@@ -183,7 +200,7 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
                     if (cellGroup != null)
                     {
                         cellGroup.FlowDirection = flowDirection;
-                        _ourTetrads.Add(cellGroup);
+                        _ourDyads.Add(cellGroup);
                     }
                 }
             }
@@ -283,12 +300,15 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
             var opponentsCells = line.Where(IsOpponents).ToList();
             if (opponentsCells.Count < 3)
                 return null;
+            var ourCells = line.Where(IsOur).ToList();
+            if (ourCells.Any())
+                return null;
 
             // Gap is too large
             if (IsOpponents(line[4]))
                 return null;
 
-            // 1-cell gap
+            // zero gap
             if (IsOpponents(line[1]) && IsOpponents(line[2]))
             {
                 if (IsEmpty(line[4]) && IsEmpty(line[3]))
@@ -314,6 +334,26 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
             var ourCells = line.Where(IsOur).ToList();
             if (ourCells.Count < 3)
                 return null;
+            var opponentsCells = line.Where(IsOpponents).ToList();
+            if (opponentsCells.Any())
+                return null;
+
+            if (IsOur(line[1]) && IsOur(line[2]))
+            {
+                if (IsEmpty(line[4]) && IsEmpty(line[3]))
+                {
+                    var isOpen = preCell != null && IsEmpty(preCell);
+                    var freeCells = isOpen ? new[] { preCell, line[3] } : new[] { line[3] };
+                    return new CellGroup
+                    {
+                        Cells = new[] { line[0], line[1], line[2] },
+                        FreeCells = freeCells,
+                        Open = isOpen,
+                        QuantityType = 3
+                    };
+                }
+                return null;
+            }
 
             return null;
         }
@@ -323,8 +363,19 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
             var opponentsCells = line.Where(IsOpponents).ToList();
             if (opponentsCells.Count < 2)
                 return null;
+            var ourCells = line.Where(IsOur).ToList();
+            if (ourCells.Any())
+                return null;
 
-            return null;
+            var isOpen = preCell != null && IsEmpty(preCell);
+            var freeCells = isOpen ? new[] { preCell, line[2] } : new[] { line[2] };
+            return new CellGroup
+            {
+                Cells = new[] { line[0], line[1] },
+                FreeCells = freeCells,
+                Open = isOpen,
+                QuantityType = 3
+            };
         }
 
         public CellGroup GetOurDyade(Cell preCell, List<Cell> line, Cell postCell)
@@ -332,8 +383,18 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
             var ourCells = line.Where(IsOur).ToList();
             if (ourCells.Count < 2)
                 return null;
-
-            return null;
+            var opponentsCells = line.Where(IsOpponents).ToList();
+            if (opponentsCells.Any())
+                return null;
+            var isOpen = preCell != null && IsEmpty(preCell);
+            var freeCells = isOpen ? new[] { preCell, line[2] } : new[] { line[2] };
+            return new CellGroup
+            {
+                Cells = new[] { line[0], line[1] },
+                FreeCells = freeCells,
+                Open = isOpen,
+                QuantityType = 3
+            };
         }
 
         private List<Cell> GetGroupByDirection(Cell cell, FlowDirection direction)
@@ -551,6 +612,9 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
 
         private Cell GetPostGroupCell(Cell cell, FlowDirection direction)
             => GetCellByDistanceAndDirection(cell, Game.VictoryLength, direction);
+
+        private void LogMessage(LogLevel level, string message)
+            => Logger.LogEntry("BRAIN_TVS", level, message);
 
         private readonly int _width;
         private readonly int _height;

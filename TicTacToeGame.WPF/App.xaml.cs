@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 using ITCC.Logging.Core;
 using ITCC.UI.Loggers;
-using ITCC.UI.Windows;
+using ITCC.WPF.Windows;
 
 namespace TicTacToeGame.WPF
 {
@@ -20,7 +21,7 @@ namespace TicTacToeGame.WPF
             DispatcherUnhandledException += (sender, args) =>
             {          
                 LogException(LogLevel.Critical, args.Exception);
-                Logger.FlushAll();
+                Logger.FlushAllAsync().Wait();
 #if DEBUG
                 args.Handled = true;
 #else
@@ -31,7 +32,7 @@ namespace TicTacToeGame.WPF
 #if DEBUG
             Logger.Level = LogLevel.Trace;
             Logger.AddBannedScope("GENERATOR");
-            var logger = new ObservableLogger(1000, RunOnUiThread);
+            var logger = new ObservableLogger(1000, RunOnUiThreadAsync);
             Logger.RegisterReceiver(logger);
             _logWindow = new LogWindow(logger);
             _logWindow.Show();
@@ -42,7 +43,8 @@ namespace TicTacToeGame.WPF
             LogMessage(LogLevel.Info, "Application ready");
         }
 
-        public static void RunOnUiThread(Action action) => Current.Dispatcher.BeginInvoke(action);
+        public static async Task RunOnUiThreadAsync(Action action) => await Current.Dispatcher.InvokeAsync(action);
+        public static void RunOnUiThread(Action action) => Current.Dispatcher.InvokeAsync(action);
 
         public static void LoadDialog<TWindow>(Window current, Action<TWindow> prepareAction = null, bool centerWindowOnScreen = false)
             where TWindow : Window, new()

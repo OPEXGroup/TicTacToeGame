@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ITCC.Logging.Core, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ITCC.Logging.Core.3.0.0\lib\net46\ITCC.Logging.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -54,14 +57,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ITCC.Library\ITCC.Logging.Core\ITCC.Logging.Core.csproj">
-      <Project>{FC73DFCF-4D11-4400-BB98-5115CA2608E1}</Project>
-      <Name>ITCC.Logging.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TicTacToeGame.Common\TicTacToeGame.Common.csproj">
       <Project>{7ae96840-3be7-47da-bece-5a8a44c02a0e}</Project>
       <Name>TicTacToeGame.Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

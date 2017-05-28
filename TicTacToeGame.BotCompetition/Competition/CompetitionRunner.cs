@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using ITCC.Logging.Core;
 using TicTacToeGame.Common;
 using TicTacToeGame.Common.Enums;
-using TicTacToeGame.Common.Utils;
 using TicTacToeGame.Players;
 using TicTacToeGame.Players.Enums;
 
@@ -64,10 +63,7 @@ namespace TicTacToeGame.BotCompetition.Competition
 
         #region private
 
-        private void LogMessage(LogLevel level, string message)
-            => Logger.LogEntry(LogScope, level, message);
-
-        private void LogException(LogLevel level, Exception exception)
+        private static void LogException(LogLevel level, Exception exception)
             => Logger.LogException(LogScope, level, exception);
 
         private CompetitionRunner(CompetitionConfiguration configuration)

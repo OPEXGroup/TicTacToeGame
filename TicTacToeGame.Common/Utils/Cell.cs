@@ -5,7 +5,7 @@ namespace TicTacToeGame.Common.Utils
     public class Cell : IEquatable<Cell>
     {
         #region IEquatable
-        public bool Equals(Cell other) => X == other.X && Y == other.Y;
+        public bool Equals(Cell other) => other != null && X == other.X && Y == other.Y;
 
         #endregion
 

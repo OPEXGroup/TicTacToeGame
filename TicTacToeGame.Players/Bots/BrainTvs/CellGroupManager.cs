@@ -610,9 +610,6 @@ namespace TicTacToeGame.Players.Bots.BrainTvs
         private Cell GetPreGroupCell(Cell cell, FlowDirection direction)
             => GetCellByDistanceAndDirection(cell, 1, OppositeDirection(direction));
 
-        private Cell GetPostGroupCell(Cell cell, FlowDirection direction)
-            => GetCellByDistanceAndDirection(cell, Game.VictoryLength, direction);
-
         private void LogMessage(LogLevel level, string message)
             => Logger.LogEntry("BRAIN_TVS", level, message);
 

@@ -53,6 +53,7 @@ namespace TicTacToeGame.BotCompetition.Competition
                 FailedToCreate = _failedToCreate,
                 FirstPlayer = _firstBotKind,
                 SecondPlayer = _secondBotKind,
+                RunCount = _runCount,
                 FirstPlayerXStats = _firstPlayerXDistribution,
                 FirstPlayerOStats = _firstPlayerODistribution,
                 Winner = winner,

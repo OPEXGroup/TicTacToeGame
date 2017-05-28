@@ -7,6 +7,7 @@ namespace TicTacToeGame.BotCompetition.Competition
     {
         public BotKind FirstPlayer { get; set; }
         public BotKind SecondPlayer { get; set; }
+        public int RunCount { get; set; }
 
         public WinLossDistribution FirstPlayerXStats { get; set; }
         public WinLossDistribution FirstPlayerOStats { get; set; }
@@ -29,7 +30,8 @@ namespace TicTacToeGame.BotCompetition.Competition
             builder.AppendLine($"\t\tWins   : {FirstPlayerOStats.Wins,padding} of {FirstPlayerOStats.Total}");
             builder.AppendLine($"\t\tLosses : {FirstPlayerOStats.Losses,padding} of {FirstPlayerOStats.Total}");
             builder.AppendLine($"\t\tDraws  : {FirstPlayerOStats.Draws,padding} of {FirstPlayerOStats.Total}");
-            var flawless = FirstPlayerXStats.Losses == 0 && FirstPlayerOStats.Losses == 0;
+            var flawless = (FirstPlayerXStats.Losses == 0 && FirstPlayerOStats.Losses == 0)
+                || (FirstPlayerXStats.Losses == RunCount && FirstPlayerOStats.Losses == RunCount);
             var winnerString = Winner == null ? "Draw" : $"{Winner} won.";
             if (flawless && Winner != null)
                 winnerString += " FLAWLESS VICTORY";
